@@ -37,3 +37,31 @@ def preprocess_data(
     ])
     return af_dataset, af_labels
 
+
+
+import json
+
+def pretty_print_json(data):
+    """
+    Print JSON-like data with automatic indentation.
+
+    Parameters:
+    - data: JSON-like data (e.g., a dictionary or a list)
+    """
+    pretty_json = json.dumps(data, indent=4)
+    print(pretty_json)
+
+
+import json
+
+def save_json(data, file_path):
+    """
+    Save JSON-like data to a file.
+
+    Parameters:
+    - data: JSON-like data (e.g., a dictionary or a list)
+    - file_path: Path to the file where JSON data will be saved
+    """
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)
+

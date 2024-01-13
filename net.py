@@ -1,16 +1,35 @@
+import torch
 from torch import nn
+from sklearn.metrics import accuracy_score, f1_score
 
+
+cls_loss_fn = nn.CrossEntropyLoss()
+reg_loss_fn = nn.MSELoss()
+
+reg_metric = nn.L1Loss()
+def cls_metric(logit, label):
+    pred_label = torch.argmax(logit, dim=-1)
+    acc = accuracy_score(pred_label.cpu(), label.cpu())
+    f1 = f1_score(pred_label.cpu(), label.view(-1).cpu(), average="macro")
+    return acc, f1
 
 class MultitaskLSTM(nn.Module):
 
-    def __init__(self, input_size, hidden_size, output_size, dropout):
+    def __init__(
+            self,
+            input_size,
+            hidden_size_1,
+            hidden_size_2,
+            output_size,
+            dropout
+        ):
         super(MultitaskLSTM, self).__init__()
 
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
-        self.lstm2 = nn.LSTM(hidden_size, 64, batch_first=True)
+        self.lstm = nn.LSTM(input_size, hidden_size_1, batch_first=True)
+        self.lstm2 = nn.LSTM(hidden_size_1, hidden_size_2, batch_first=True)
         self.dropout = nn.Dropout(dropout)
-        self.cls = nn.Linear(hidden_size, output_size)
-        self.reg = nn.Linear(64, 1)
+        self.cls = nn.Linear(hidden_size_1, output_size)
+        self.reg = nn.Linear(hidden_size_2, 1)
 
     def forward(self, x):
         out, _ = self.lstm(x)
