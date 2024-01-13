@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 import wandb
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+# from tqdm import tqdm
+from tqdm import tqdm_notebook
 
 from utils import save_json
 from utils import pretty_print_json
@@ -97,7 +98,8 @@ class MultitaskTrainer(Trainer):
         # Training
         self.model.to(device)
         patient = 0
-        pbar = tqdm(range(self.epochs), desc="Training")
+        # pbar = tqdm(range(self.epochs), desc="Training")
+        pbar = tqdm_notebook(range(self.epochs), desc="Training")
         for _ in pbar:
             train_log = self._inner_training_loop(
                 train_dataloader=self.train_dataloader,
