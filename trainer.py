@@ -87,7 +87,7 @@ class MultitaskTrainer(Trainer):
         max_f1 = test_log["Test F1"]
         min_mae = test_log["Test MAE"]
         min_loss = test_log["Test Loss"]
-        print("Evaluate before training:")
+        print("Evaluate before training:", flush=True)
         pretty_print_json(test_log)
 
         best_cls_log = {}
@@ -97,7 +97,7 @@ class MultitaskTrainer(Trainer):
         # Training
         self.model.to(device)
         patient = 0
-        pbar = tqdm(range(self.epochs), colour="green", desc="Training")
+        pbar = tqdm(range(self.epochs), ncols=180, colour="green", desc="Training")
         for _ in pbar:
             train_log = self._inner_training_loop(
                 train_dataloader=self.train_dataloader,
@@ -123,7 +123,7 @@ class MultitaskTrainer(Trainer):
 
             # Save best checkpoint classify
             if test_log["Test F1"] > max_f1:
-                tqdm.write(f"Improve F1 score from {round(max_f1, 2)} to {round(test_log['Test F1'], 2)}")
+                tqdm.write(f"Improve F1 score from {round(max_f1, 2)} to {round(test_log['Test F1'], 2)}", end="\n\r")
                 max_f1 = test_log["Test F1"]
                 best_cls_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_cls.pth")
@@ -131,7 +131,7 @@ class MultitaskTrainer(Trainer):
                 
             # Save best checkpoint regression
             if test_log["Test MAE"] < min_mae:
-                tqdm.write(f"Improve MAE score from {round(min_mae, 2)} to {round(test_log['Test MAE'], 2)}")
+                tqdm.write(f"Improve MAE score from {round(min_mae, 2)} to {round(test_log['Test MAE'], 2)}", end="\n\r")
                 min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_reg.pth")
@@ -140,7 +140,7 @@ class MultitaskTrainer(Trainer):
             # Save best checkpoint 
             if test_log["Test Loss"] > min_loss:
                 patient += 1
-                tqdm.write(f"Test loss: {test_log['Test Loss']} => Don't improve from {min_loss}")
+                tqdm.write(f"Test loss: {test_log['Test Loss']} => Don't improve from {min_loss}", end="\n\r")
             else:
                 patient = 0
                 min_loss = test_log["Test Loss"]
@@ -151,9 +151,12 @@ class MultitaskTrainer(Trainer):
         #         print(f"Early stopping at epoch {epoch + 1}!")
         #         break
             records = {
-                "Test Max F1": round(max_f1, 2),
-                "Test Min MAE": round(max_f1, 2),
-                "Test Min Loss": round(min_loss, 2)
+                "max_f1_test": round(max_f1, 2),
+                "min_mae_test": round(max_f1, 2),
+                "min_loss_test": round(min_loss, 2),
+                "train_loss": round(test_log["Train Loss"], 2),
+                "train_mse": round(test_log["Train Loss Reg"], 2),
+                "train_ce": round(test_log["Train Loss Cls"], 2)
             }  
             pbar.set_postfix(**records)
 

@@ -49,7 +49,7 @@ def pretty_print_json(data):
     - data: JSON-like data (e.g., a dictionary or a list)
     """
     pretty_json = json.dumps(data, indent=4)
-    print(pretty_json)
+    print(pretty_json, flush=True)
 
 
 import json
