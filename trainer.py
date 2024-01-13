@@ -4,8 +4,7 @@ from dotenv import load_dotenv
 import wandb
 import torch
 from torch.utils.data import DataLoader
-# from tqdm import tqdm
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 
 from utils import save_json
 from utils import pretty_print_json
@@ -86,8 +85,8 @@ class MultitaskTrainer(Trainer):
             reg_metric=self.reg_metric
         )
         max_f1 = test_log["Test F1"]
-        max_mae = test_log["Test MAE"]
-        max_loss = test_log["Test Loss"]
+        min_mae = test_log["Test MAE"]
+        min_loss = test_log["Test Loss"]
         print("Evaluate before training:")
         pretty_print_json(test_log)
 
@@ -98,8 +97,7 @@ class MultitaskTrainer(Trainer):
         # Training
         self.model.to(device)
         patient = 0
-        # pbar = tqdm(range(self.epochs), desc="Training")
-        pbar = tqdm_notebook(range(self.epochs), desc="Training")
+        pbar = tqdm(range(self.epochs), colour="green", desc="Training")
         for _ in pbar:
             train_log = self._inner_training_loop(
                 train_dataloader=self.train_dataloader,
@@ -117,7 +115,6 @@ class MultitaskTrainer(Trainer):
                     compute_reg_loss=self.reg_loss_fn,
                     cls_metric=self.cls_metric,
                     reg_metric=self.reg_metric,
-                    pbar=pbar,
                     train_log=train_log
             )
 
@@ -126,32 +123,39 @@ class MultitaskTrainer(Trainer):
 
             # Save best checkpoint classify
             if test_log["Test F1"] > max_f1:
-                print(f"Improve F1 score from {round(max_f1, 2)} to {round(test_log['Test F1'], 2)}")
+                tqdm.write(f"Improve F1 score from {round(max_f1, 2)} to {round(test_log['Test F1'], 2)}")
                 max_f1 = test_log["Test F1"]
                 best_cls_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_cls.pth")
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
                 
             # Save best checkpoint regression
-            if test_log["Test MAE"] < max_mae:
-                print(f"Improve MAE score from {round(max_mae, 2)} to {round(test_log['Test MAE'], 2)}")
-                max_mae = test_log["Test MAE"]
+            if test_log["Test MAE"] < min_mae:
+                tqdm.write(f"Improve MAE score from {round(min_mae, 2)} to {round(test_log['Test MAE'], 2)}")
+                min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_reg.pth")
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
                 
             # Save best checkpoint 
-            if test_log["Test Loss"] > max_loss:
+            if test_log["Test Loss"] > min_loss:
                 patient += 1
-                print(f"Test loss: {test_log['Test Loss']} => Don't improve from {max_loss}")
+                tqdm.write(f"Test loss: {test_log['Test Loss']} => Don't improve from {min_loss}")
             else:
                 patient = 0
-                max_loss = test_log["Test Loss"]
+                min_loss = test_log["Test Loss"]
+                best_multitask_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_multitask.pth")
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
         #     if patient > 100:
         #         print(f"Early stopping at epoch {epoch + 1}!")
         #         break
+            records = {
+                "Test Max F1": round(max_f1, 2),
+                "Test Min MAE": round(max_f1, 2),
+                "Test Min Loss": round(min_loss, 2)
+            }  
+            pbar.set_postfix(**records)
 
         result_training = {
             "best_cls_log": best_cls_log,
@@ -217,10 +221,10 @@ class MultitaskTrainer(Trainer):
         
         log_result = {
             "Train Loss": avg_loss,
-            "Train Loss Regression": avg_loss_reg,
-            "Train Loss Classify": avg_loss_cls,
+            "Train Loss Reg": avg_loss_reg,
+            "Train Loss Cls": avg_loss_cls,
             "Train MAE": avg_mae,
-            "Train Accuracy": avg_acc,
+            "Train Acc": avg_acc,
             "Train F1": avg_f1
         }
         
@@ -235,7 +239,6 @@ class MultitaskTrainer(Trainer):
         cls_metric,
         reg_metric,
         train_log={},
-        pbar=None
     ):
         num_batches = len(test_dataloader)
         total_loss = 0
@@ -277,21 +280,21 @@ class MultitaskTrainer(Trainer):
         
         log_result = {
             "Test Loss": avg_loss,
-            "Test Loss Regression": avg_loss_reg,
-            "Test Loss Classify": avg_loss_cls,
+            "Test Loss Reg": avg_loss_reg,
+            "Test Loss Cls": avg_loss_cls,
             "Test MAE": avg_mae,
-            "Test Accuracy": avg_acc,
+            "Test Acc": avg_acc,
             "Test F1": avg_f1
         }
         
     #     log_result = {
     #         "Test Loss": avg_loss,
-    #         "Test Accuracy": avg_acc,
+    #         "Test Acc": avg_acc,
     #         "Test F1": avg_f1
     #     }
+        for k, v in log_result.items():
+            log_result[k] = round(v, 4)
         log_result.update(train_log)
-        if pbar:
-            pbar.set_postfix(**log_result)
         return log_result
 
     def save_checkpoint(self, checkpoint_path):
