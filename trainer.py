@@ -152,7 +152,7 @@ class MultitaskTrainer(Trainer):
         #         break
             records = {
                 "max_f1_test": round(max_f1, 2),
-                "min_mae_test": round(max_f1, 2),
+                "min_mae_test": round(min_mae, 2),
                 "min_loss_test": round(min_loss, 2),
                 "train_loss": round(test_log["Train Loss"], 2),
                 "train_mse": round(test_log["Train Loss Reg"], 2),
