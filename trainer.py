@@ -39,7 +39,7 @@ class MultitaskTrainer(Trainer):
         batch_size,
         epochs,
         output_dir,
-        log_steps=5,
+        log_steps,
         log_wandb=False,
         project_name=None,
         experiment_name=None
@@ -123,7 +123,8 @@ class MultitaskTrainer(Trainer):
 
             # Save best checkpoint classify
             if test_log["Test F1"] > max_f1:
-                tqdm.write(f"Improve F1 score from {round(max_f1, 2)} to {round(test_log['Test F1'], 2)}", end="\n\r")
+                log_message = f"Improve F1 score from {round(max_f1, 2)} to {round(test_log['Test F1'], 2)}"
+                tqdm.write(log_message, end="\n\n")
                 max_f1 = test_log["Test F1"]
                 best_cls_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_cls.pth")
@@ -131,7 +132,7 @@ class MultitaskTrainer(Trainer):
                 
             # Save best checkpoint regression
             if test_log["Test MAE"] < min_mae:
-                tqdm.write(f"Improve MAE score from {round(min_mae, 2)} to {round(test_log['Test MAE'], 2)}", end="\n\r")
+                tqdm.write(f"Improve MAE score from {round(min_mae, 2)} to {round(test_log['Test MAE'], 2)}", end="\n\n")
                 min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
                 checkpoint_path = os.path.join(self.output_dir, "best_reg.pth")
@@ -140,7 +141,7 @@ class MultitaskTrainer(Trainer):
             # Save best checkpoint 
             if test_log["Test Loss"] > min_loss:
                 patient += 1
-                tqdm.write(f"Test loss: {test_log['Test Loss']} => Don't improve from {min_loss}", end="\n\r")
+                tqdm.write(f"Test loss: {test_log['Test Loss']} => Don't improve from {min_loss}", end="\n\n")
             else:
                 patient = 0
                 min_loss = test_log["Test Loss"]

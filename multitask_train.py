@@ -17,19 +17,19 @@ from net import (
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Hyper parameters for training")
     # Hyper parameter for training
-    parser.add_argument('--batch_size', type=int, default=512, help='Batch size for training')
-    parser.add_argument('--epochs', type=int, default=600, help='Number of training epochs')
-    parser.add_argument('--input_dim', type=int, default=3, help='Input dimension')
-    parser.add_argument('--n_hidden_1', type=int, default=128, help='Number of hidden units in the LSTM layer')
-    parser.add_argument('--n_hidden_2', type=int, default=64, help='Number of hidden units in the LSTM layer')
-    parser.add_argument('--n_classes', type=int, default=12, help='Number of output classes')
-    parser.add_argument('--p_dropout', type=float, default=0.25, help='Dropout probability')
-    parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
-    parser.add_argument('--log_steps', type=int, default=5, help='Logging steps during training')
+    parser.add_argument('--batch_size', type=int, help='Batch size for training')
+    parser.add_argument('--epochs', type=int, help='Number of training epochs')
+    parser.add_argument('--input_dim', type=int, help='Input dimension')
+    parser.add_argument('--n_hidden_1', type=int, help='Number of hidden units in the LSTM layer')
+    parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
+    parser.add_argument('--n_classes', type=int, help='Number of output classes')
+    parser.add_argument('--p_dropout', type=float, help='Dropout probability')
+    parser.add_argument('--learning_rate', type=float, help='Learning rate')
+    parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     
     # Location of data and checkpoint 
-    parser.add_argument('--data_path', type=str, default='data/res_and_16pos.npz', help='Path to the data training')
-    parser.add_argument('--output_dir', type=str, default='models/multitask_LSTM', help='Output directory for saving models')
+    parser.add_argument('--data_path', type=str, help='Path to the data training')
+    parser.add_argument('--output_dir', type=str, help='Output directory for saving models')
 
     # WandB logging
     parser.add_argument('--log_wandb', action='store_true', help='Enable WandB logging')
