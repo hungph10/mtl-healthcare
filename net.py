@@ -85,7 +85,7 @@ class RegressionLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_size_1, batch_first=True)
         self.lstm2 = nn.LSTM(hidden_size_1, hidden_size_2, batch_first=True)
         self.dropout = nn.Dropout(dropout)
-        self.cls = nn.Linear(hidden_size_1, output_size)
+        self.reg = nn.Linear(hidden_size_2, 1)
 
         
     def forward(self, x):

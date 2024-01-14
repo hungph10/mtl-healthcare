@@ -3,13 +3,10 @@ import numpy as np
 import torch
 
 from dataset import get_data_mtl
-from dataset import MultitaskDataset
-# from trainer import MultitaskTrainer
-from trainer.multitask_trainer import MultitaskTrainer
+from dataset import RegressionDataset
+from trainer.regression_trainer import RegressionTrainer
 from net import (
-    MultitaskLSTM,
-    cls_metric,
-    cls_loss_fn,
+    RegressionLSTM,
     reg_loss_fn,
     reg_metric
 )
@@ -48,21 +45,19 @@ if __name__ == "__main__":
     data = np.load(args.data_path)
     print("Loading data from {}...".format(args.data_path))
     tensor_data = get_data_mtl(data=data)
-    train_dataset = MultitaskDataset(
+    train_dataset = RegressionDataset(
         features=tensor_data["x_train"],
-        cls_target=tensor_data["y_train_cls"],
         reg_target=tensor_data["y_train_reg"]
     )
-    test_dataset = MultitaskDataset(
+    test_dataset = RegressionDataset(
         features=tensor_data["x_test"],
-        cls_target=tensor_data["y_test_cls"],
         reg_target=tensor_data["y_test_reg"]
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Initialize the PyTorch model
-    model = MultitaskLSTM(
+    model = RegressionLSTM(
         input_size=args.input_dim,
         hidden_size_1=args.n_hidden_1,
         hidden_size_2=args.n_hidden_2,
@@ -83,13 +78,11 @@ if __name__ == "__main__":
     print("- Number of epochs: {}".format(args.epochs))
     print("- Learning rate: {}".format(args.learning_rate))
     print("Model config:\n", model)
-    trainer = MultitaskTrainer(
+    trainer = RegressionTrainer(
         model=model,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
-        cls_loss_fn=cls_loss_fn,
         reg_loss_fn=reg_loss_fn,
-        cls_metric=cls_metric,
         reg_metric=reg_metric,
         optimizer=optimizer,
         batch_size=args.batch_size,
