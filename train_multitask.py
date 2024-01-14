@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 from dataset import get_data_mtl
-from dataset import ACCDataset
+from dataset import MultitaskDataset
 # from trainer import MultitaskTrainer
 from trainer.multitask_trainer import MultitaskTrainer
 from net import (
@@ -48,12 +48,12 @@ if __name__ == "__main__":
     data = np.load(args.data_path)
     print("Loading data from {}...".format(args.data_path))
     tensor_data = get_data_mtl(data=data)
-    train_dataset = ACCDataset(
+    train_dataset = MultitaskDataset(
         features=tensor_data["x_train"],
         cls_target=tensor_data["y_train_cls"],
         reg_target=tensor_data["y_train_reg"]
     )
-    test_dataset = ACCDataset(
+    test_dataset = MultitaskDataset(
         features=tensor_data["x_test"],
         cls_target=tensor_data["y_test_cls"],
         reg_target=tensor_data["y_test_reg"]

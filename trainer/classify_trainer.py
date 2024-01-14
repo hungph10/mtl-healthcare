@@ -118,7 +118,6 @@ class ClassifyTrainer(BaseTrainer):
                 "max_f1_test": round(max_f1, 2),
                 "min_loss_test": round(min_loss, 2),
                 "train_loss": round(test_log["Train Loss"], 2),
-                "train_ce": round(test_log["Train Loss Cls"], 2)
             }  
             pbar.set_postfix(**records)
 
@@ -148,7 +147,7 @@ class ClassifyTrainer(BaseTrainer):
         total_f1 = 0
         model.train()
         step = 0
-        for x, y_cls, _ in train_dataloader:
+        for x, y_cls in train_dataloader:
             cls_output = model(x)
             y_cls = y_cls.view(-1)
             cls_loss = cls_loss_fn(cls_output, y_cls)
@@ -169,7 +168,7 @@ class ClassifyTrainer(BaseTrainer):
         avg_f1 = total_acc / num_batches
         
         log_result = {
-            "Train Loss Cls": avg_loss_cls,
+            "Train Loss": avg_loss_cls,
             "Train Acc": avg_acc,
             "Train F1": avg_f1
         }
@@ -185,16 +184,14 @@ class ClassifyTrainer(BaseTrainer):
         train_log={},
     ):
         num_batches = len(test_dataloader)
-        total_loss = 0
         total_loss_cls = 0
         
-        total_mae = 0
         total_acc = 0
         total_f1 = 0
         
         model.eval()
         with torch.no_grad():
-            for x, y_cls, _ in test_dataloader:
+            for x, y_cls in test_dataloader:
                 y_cls = y_cls.view(-1)
                 cls_output = model(x)
                 cls_loss = compute_cls_loss(cls_output, y_cls)
@@ -212,7 +209,7 @@ class ClassifyTrainer(BaseTrainer):
         avg_f1 = total_acc / num_batches
         
         log_result = {
-            "Test Loss Cls": avg_loss_cls,
+            "Test Loss": avg_loss_cls,
             "Test Acc": avg_acc,
             "Test F1": avg_f1
         }
