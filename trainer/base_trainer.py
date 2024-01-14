@@ -61,6 +61,11 @@ class BaseTrainer:
         else:
             self.log_wandb = False
 
+        print("Number of model parameters: {}".format(self.count_parameters()))
+
+    def count_parameters(self):
+        return sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+
     @staticmethod
     def get_log_message(epoch, metric, before, after, patient=False):
         if patient:
