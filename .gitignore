@@ -1,6 +1,6 @@
 data/**
-__pycache__/**
 *.ipynb
 .env
 wandb/**
 models/**
+__pycache__/

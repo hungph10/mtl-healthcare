@@ -4,7 +4,8 @@ import torch
 
 from dataset import get_data_mtl
 from dataset import ACCDataset
-from trainer import MultitaskTrainer
+# from trainer import MultitaskTrainer
+from trainer.multitask_trainer import MultitaskTrainer
 from net import (
     MultitaskLSTM,
     cls_metric,
