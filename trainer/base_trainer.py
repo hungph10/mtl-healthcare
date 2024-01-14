@@ -2,9 +2,13 @@ import os
 
 import torch
 import wandb
+from dotenv import load_dotenv
 
 from torch.utils.data import DataLoader
 
+
+load_dotenv()
+wandb_api_key = os.getenv("WANDB_API_KEY")
 
 class BaseTrainer:
 

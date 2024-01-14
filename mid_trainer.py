@@ -82,17 +82,6 @@ class Trainer:
 
 
 
-class ClassifyTrainer(Trainer):
-    def __init__(
-        self, model, train_dataset, eval_dataset, optimizer,batch_size,
-        epochs, output_dir, log_steps, log_wandb, project_name, experiment_name,
-        cls_loss_fn, cls_metric
-    ):
-        super().__init__(model, train_dataset, eval_dataset,
-                        optimizer, batch_size, epochs, output_dir,
-                        log_steps, log_wandb, project_name, experiment_name)
 
-        self.cls_loss_fn = cls_loss_fn
-        self.cls_metric = cls_metric
 
 
