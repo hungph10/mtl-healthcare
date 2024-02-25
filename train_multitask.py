@@ -1,4 +1,6 @@
 import argparse
+import random
+
 import numpy as np
 import torch
 
@@ -26,6 +28,7 @@ def parse_arguments():
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
+    parser.add_argument('--fix_random', type=bool, default=False, help='Learning rate')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     
     # Location of data and checkpoint 
@@ -41,8 +44,20 @@ def parse_arguments():
     return args
 
 
+def set_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 if __name__ == "__main__":
     args = parse_arguments()
+
+    # set random seed
+    if args.fix_random:
+        set_random_seed(32)
 
     # Load data
     data = np.load(args.data_path)
