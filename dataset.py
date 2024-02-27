@@ -55,13 +55,26 @@ class RegressionDataset(Dataset):
 def get_data(x_train, y_train, x_test, y_test):
     return x_train, y_train, x_test, y_test
 
-def get_data_mtl(data):
+def get_data_mtl(data: dict):
     data = dict(data)
     x_train_npy, y_train_npy, x_test_npy, y_test_npy = get_data(**data)
     tensor_data = {
         "x_train": torch.tensor(x_train_npy[:, : , :-1]).float(),
         "y_train_cls": torch.tensor(x_train_npy[:, : , -1], dtype=torch.long),
         "y_train_reg": torch.tensor(y_train_npy).float(),
+        "x_test": torch.tensor(x_test_npy[:, :, :-1]).float(),
+        "y_test_cls": torch.tensor(x_test_npy[:, : , -1], dtype=torch.long),
+        "y_test_reg": torch.tensor(y_test_npy).float()
+    }
+    return tensor_data
+
+def get_test_data(x_test, y_test):
+    return x_test, y_test
+
+def get_test_data_mtl(data: dict):
+    data = dict(data)
+    x_test_npy, y_test_npy = get_test_data(**data)
+    tensor_data = {
         "x_test": torch.tensor(x_test_npy[:, :, :-1]).float(),
         "y_test_cls": torch.tensor(x_test_npy[:, : , -1], dtype=torch.long),
         "y_test_reg": torch.tensor(y_test_npy).float()

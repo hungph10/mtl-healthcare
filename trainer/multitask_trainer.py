@@ -193,7 +193,7 @@ class MultitaskTrainer(BaseTrainer):
             y_cls = y_cls.view(-1)
             cls_loss = cls_loss_fn(cls_output, y_cls)
             
-            loss = reg_loss + cls_loss + (gradient(reg_loss) * gradient(cls_loss) - 1)
+            loss = reg_loss + cls_loss
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

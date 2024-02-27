@@ -23,7 +23,7 @@ This repository contains code for training, experiments multitask classification
    ```
    - Create file `train.sh`, and insert script training
     ```
-    python multitask_train.py \
+    python train_multitask.py \
         --batch_size 512 \
         --epochs 600 \
         --input_dim 3 \
