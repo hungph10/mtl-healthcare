@@ -197,11 +197,15 @@ class MultitaskTrainer(BaseTrainer):
             grads_cls = torch.autograd.grad(cls_loss, model.lstm.parameters(), retain_graph=True)
 
             grad_loss = 0
-
+            #
             for i in range(len(grads_reg)):
-                grad_loss += (torch.mean(grads_cls[i]*grads_reg[i]) -1)
+                    grad_loss += torch.norm((torch.mul(grads_cls[i], grads_reg[i]) - torch.ones_like(grads_reg[i]).to(device)), 2)
 
-            loss = reg_loss + cls_loss + grad_loss
+            weight_regress = 0.1
+            loss = weight_regress*reg_loss + cls_loss + grad_loss
+
+            # loss = reg_loss + cls_loss + grad_loss
+
 
             # loss = reg_loss + cls_loss
 

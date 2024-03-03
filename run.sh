@@ -8,7 +8,7 @@ python train_multitask.py \
     --n_classes 12 \
     --p_dropout 0.25 \
     --learning_rate 0.001 \
-    --fix_random True \
+    --fix_random False \
     --log_steps 5 \
     --data_path "/mnt/new2/acadimic/mtl-healthcare/data/respiration_regression_and_12posture-classification.npz" \
     --output_dir "models/multitask_LSTM" \

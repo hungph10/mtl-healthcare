@@ -57,6 +57,7 @@ if __name__ == "__main__":
 
     # set random seed
     if args.fix_random:
+        print("Fix random seed")
         set_random_seed(32)
 
     # Load data
