@@ -18,9 +18,17 @@ access *https://wandb.ai/authorize* (login via Google account):
         ```
 
 3. **Training**: 
+   
+   Ensure you installed python on your machine.
+   You should create venv:
+   ```
+   python -m venv venv
+   source venv/bin/activate
+   (venv) pip install -U pip
+   ```
    - Firstly, install dependencies:
    ```
-   pip install -r requirements.txt
+   (venv) pip install -r requirements.txt
    ```
    - Create file `train.sh`, and insert script training
     ```
@@ -49,7 +57,7 @@ access *https://wandb.ai/authorize* (login via Google account):
     
     Open terminal and run train.sh
     ```
-    sh train.sh
+    (venv) sh train.sh
     ```
 
 
