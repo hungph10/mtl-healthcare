@@ -7,7 +7,7 @@ import torch
 from dataset import get_data_mtl
 from dataset import MultitaskDataset
 # from trainer import MultitaskTrainer
-from trainer.multitask_orthogonal_trainer import MultitaskTrainer
+from trainer.multitask_orthogonal_trainer import MultitaskOrthogonalTrainer
 from net import (
     MultitaskLSTM,
     cls_metric,
@@ -30,13 +30,16 @@ def parse_arguments():
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
     parser.add_argument('--fix_random', type=bool, default=False, help='Learning rate')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
+    parser.add_argument('--w_regression', type=float, default=1, help='Weight regression loss')
+    parser.add_argument('--w_classify', type=float, default=1, help='Weight classify loss')
+    parser.add_argument('--w_grad', type=float, default=1, help='Weight gradient loss')
     
     # Location of data and checkpoint 
     parser.add_argument('--data_path', type=str, help='Path to the data training')
     parser.add_argument('--output_dir', type=str, help='Output directory for saving models')
 
-    # WandB logging
-    parser.add_argument('--log_wandb', action='store_true', help='Enable WandB logging')
+    # WandDB logging
+    parser.add_argument('--log_wandb', action='store_true', help='Enable wandb logging')
     parser.add_argument('--project_name', type=str, default='Project demo', help='WandB project name')
     parser.add_argument('--experiment_name', type=str, default='Experiment demo', help='WandB experiment name')
     
@@ -99,7 +102,7 @@ if __name__ == "__main__":
     print("- Number of epochs: {}".format(args.epochs))
     print("- Learning rate: {}".format(args.learning_rate))
     print("Model config:\n", model)
-    trainer = MultitaskTrainer(
+    trainer = MultitaskOrthogonalTrainer(
         model=model,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
@@ -114,6 +117,9 @@ if __name__ == "__main__":
         log_steps=args.log_steps,
         log_wandb=args.log_wandb,
         project_name=args.project_name,
-        experiment_name=args.experiment_name
+        experiment_name=args.experiment_name,
+        weight_regression=args.w_regression,
+        weight_classify=args.w_classify,
+        weight_grad=args.w_grad
     )
     trainer.train()

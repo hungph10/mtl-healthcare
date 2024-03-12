@@ -4,3 +4,4 @@ data/**
 wandb/**
 models/**
 __pycache__/
+docs/**
