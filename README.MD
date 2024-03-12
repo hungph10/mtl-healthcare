@@ -1,6 +1,6 @@
 # Multitask learning: Respiration Estimation & Posture classification
 
-_Authors: **Pham Van Hung**_
+_Authors: **Vu Hoang Dieu, Pham Van Hung, Nghia DV, Dat, Cuong**_
 
 This repository contains code for training, experiments multitask classification and regression.
 
