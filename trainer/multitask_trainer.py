@@ -1,7 +1,6 @@
 import os
 import wandb
 import torch
-from rich import print
 from tqdm import tqdm
 
 from utils import save_json
@@ -12,12 +11,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class MultitaskTrainer(BaseTrainer):
-
+    
     def __init__(
-            self, model, train_dataset, eval_dataset,
-            optimizer, batch_size, epochs, output_dir,
-            log_steps, log_wandb, project_name, experiment_name,
-            cls_loss_fn, reg_loss_fn, cls_metric, reg_metric
+        self, model, train_dataset, eval_dataset,
+        optimizer, batch_size, epochs, output_dir,
+        log_steps, log_wandb, project_name, experiment_name,
+        cls_loss_fn, reg_loss_fn, cls_metric, reg_metric
     ):
         super().__init__(
             model, train_dataset, eval_dataset, optimizer,
@@ -28,6 +27,7 @@ class MultitaskTrainer(BaseTrainer):
         self.reg_loss_fn = reg_loss_fn
         self.cls_metric = cls_metric
         self.reg_metric = reg_metric
+        
 
     def train(self):
         # Evaluate before training
@@ -48,7 +48,7 @@ class MultitaskTrainer(BaseTrainer):
         best_cls_log = {}
         best_reg_log = {}
         best_multitask_log = {}
-
+        
         # Training
         self.model.to(device)
         patient = 0
@@ -61,7 +61,7 @@ class MultitaskTrainer(BaseTrainer):
         for epoch in pbar:
             train_log = self._inner_training_loop(
                 train_dataloader=self.train_dataloader,
-                model=self.model,
+                model=self.model, 
                 cls_loss_fn=self.cls_loss_fn,
                 reg_loss_fn=self.reg_loss_fn,
                 optimizer=self.optimizer,
@@ -69,13 +69,13 @@ class MultitaskTrainer(BaseTrainer):
                 reg_metric=self.reg_metric
             )
             test_log = self.evaluate(
-                test_dataloader=self.test_dataloader,
-                model=self.model,
-                compute_cls_loss=self.cls_loss_fn,
-                compute_reg_loss=self.reg_loss_fn,
-                cls_metric=self.cls_metric,
-                reg_metric=self.reg_metric,
-                train_log=train_log
+                    test_dataloader=self.test_dataloader,
+                    model=self.model,
+                    compute_cls_loss=self.cls_loss_fn,
+                    compute_reg_loss=self.reg_loss_fn,
+                    cls_metric=self.cls_metric,
+                    reg_metric=self.reg_metric,
+                    train_log=train_log
             )
 
             if self.log_wandb:
@@ -99,7 +99,7 @@ class MultitaskTrainer(BaseTrainer):
                     "best_cls.pth"
                 )
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
-
+                
             # Save best checkpoint regression
             if test_log["Test MAE"] < min_mae:
                 log_message = self.get_log_message(
@@ -118,7 +118,7 @@ class MultitaskTrainer(BaseTrainer):
                     "best_reg.pth"
                 )
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
-
+                
             # Save best multitask checkpoint 
             if test_log["Test Loss"] > min_loss:
                 patient += 1
@@ -135,15 +135,15 @@ class MultitaskTrainer(BaseTrainer):
                 # Update record multitask loss
                 min_loss = test_log["Test Loss"]
                 best_multitask_log = test_log
-
+                
                 checkpoint_path = os.path.join(
                     self.output_dir,
                     "best_multitask.pth"
                 )
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
-            #     if patient > 100:
-            #         print(f"Early stopping at epoch {epoch + 1}!")
-            #         break
+        #     if patient > 100:
+        #         print(f"Early stopping at epoch {epoch + 1}!")
+        #         break
             records = {
                 "max_f1_test": round(max_f1, 2),
                 "min_mae_test": round(min_mae, 2),
@@ -151,7 +151,7 @@ class MultitaskTrainer(BaseTrainer):
                 "train_loss": round(test_log["Train Loss"], 2),
                 "train_mse": round(test_log["Train Loss Reg"], 2),
                 "train_ce": round(test_log["Train Loss Cls"], 2)
-            }
+            }  
             pbar.set_postfix(**records)
 
         result_training = {
@@ -159,15 +159,15 @@ class MultitaskTrainer(BaseTrainer):
             "best_reg_log": best_reg_log,
             "best_multitask_log": best_multitask_log
         }
-
-        log_path = os.path.join(self.output_dir, "result_training.json")
+        log_path = os.path.join(self.output_dir, "result_training.json") 
         save_json(
             data=result_training,
             file_path=log_path
         )
 
-    @staticmethod
+
     def _inner_training_loop(
+            self,
             train_dataloader,
             model,
             cls_loss_fn,
@@ -175,13 +175,13 @@ class MultitaskTrainer(BaseTrainer):
             optimizer,
             cls_metric,
             reg_metric
-    ):
+        ):
         num_batches = len(train_dataloader)
         total_loss = 0
-
+        
         total_loss_reg = 0
         total_loss_cls = 0
-
+        
         total_mae = 0
         total_acc = 0
         total_f1 = 0
@@ -192,31 +192,17 @@ class MultitaskTrainer(BaseTrainer):
             reg_loss = reg_loss_fn(reg_output, y_reg)
             y_cls = y_cls.view(-1)
             cls_loss = cls_loss_fn(cls_output, y_cls)
-
-            grads_reg = torch.autograd.grad(reg_loss, model.lstm.parameters(), retain_graph=True)
-            grads_cls = torch.autograd.grad(cls_loss, model.lstm.parameters(), retain_graph=True)
-
-            grad_loss = 0
-            #
-            for i in range(len(grads_reg)):
-                    grad_loss += torch.norm((torch.mul(grads_cls[i], grads_reg[i]) - torch.ones_like(grads_reg[i]).to(device)), 2)
-
-            weight_regress = 0.1
-            loss = weight_regress*reg_loss + cls_loss + grad_loss
-
-            # loss = reg_loss + cls_loss + grad_loss
-
-
-            # loss = reg_loss + cls_loss
-
+            
+            loss = reg_loss + cls_loss + reg_loss
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
+            
+            
             total_loss_reg += reg_loss.item()
             total_loss_cls += cls_loss.item()
             total_loss += loss.item()
-
+            
             total_mae += reg_metric(reg_output, y_reg).item()
             acc, f1 = cls_metric(cls_output, y_cls)
             total_acc += acc
@@ -225,11 +211,11 @@ class MultitaskTrainer(BaseTrainer):
         avg_loss = total_loss / num_batches
         avg_loss_cls = total_loss_cls / num_batches
         avg_loss_reg = total_loss_reg / num_batches
-
+        
         avg_mae = total_mae / num_batches
         avg_acc = total_acc / num_batches
         avg_f1 = total_acc / num_batches
-
+        
         log_result = {
             "Train Loss": avg_loss,
             "Train Loss Reg": avg_loss_reg,
@@ -238,38 +224,36 @@ class MultitaskTrainer(BaseTrainer):
             "Train Acc": avg_acc,
             "Train F1": avg_f1
         }
-
+        
         return log_result
 
     @staticmethod
     def evaluate(
-            test_dataloader,
-            model,
-            compute_cls_loss,
-            compute_reg_loss,
-            cls_metric,
-            reg_metric,
-            train_log={},
+        test_dataloader,
+        model,
+        compute_cls_loss, 
+        compute_reg_loss,
+        cls_metric,
+        reg_metric,
+        train_log={},
     ):
         num_batches = len(test_dataloader)
         total_loss = 0
         total_loss_reg = 0
         total_loss_cls = 0
-
+        
         total_mae = 0
         total_acc = 0
         total_f1 = 0
-
+        
         model.eval()
-
-
         with torch.no_grad():
             for x, y_cls, y_reg in test_dataloader:
                 y_cls = y_cls.view(-1)
                 reg_output, cls_output = model(x)
                 reg_loss = compute_reg_loss(reg_output, y_reg)
                 cls_loss = compute_cls_loss(cls_output, y_cls)
-
+                
                 loss = reg_loss + cls_loss
 
                 total_loss_cls += cls_loss.item()
@@ -280,15 +264,17 @@ class MultitaskTrainer(BaseTrainer):
                 acc, f1 = cls_metric(cls_output, y_cls)
                 total_acc += acc
                 total_f1 += f1
+                
+                
 
         avg_loss = total_loss / num_batches
-
+        
         avg_loss_cls = total_loss_cls / num_batches
         avg_loss_reg = total_loss_reg / num_batches
         avg_mae = total_mae / num_batches
         avg_acc = total_acc / num_batches
         avg_f1 = total_acc / num_batches
-
+        
         log_result = {
             "Test Loss": avg_loss,
             "Test Loss Reg": avg_loss_reg,
@@ -297,12 +283,12 @@ class MultitaskTrainer(BaseTrainer):
             "Test Acc": avg_acc,
             "Test F1": avg_f1
         }
-
-        #     log_result = {
-        #         "Test Loss": avg_loss,
-        #         "Test Acc": avg_acc,
-        #         "Test F1": avg_f1
-        #     }
+        
+    #     log_result = {
+    #         "Test Loss": avg_loss,
+    #         "Test Acc": avg_acc,
+    #         "Test F1": avg_f1
+    #     }
         for k, v in log_result.items():
             log_result[k] = round(v, 4)
         log_result.update(train_log)

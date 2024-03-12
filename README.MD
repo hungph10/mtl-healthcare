@@ -23,8 +23,9 @@ This repository contains code for training, experiments multitask classification
    ```
    - Create file `train.sh`, and insert script training
     ```
-    python multitask_train.py \
-        --batch_size 512 \
+    # Training multitask orthogonal
+    python train_multitask_orthogonal.py \
+        --batch_size 256 \
         --epochs 600 \
         --input_dim 3 \
         --n_hidden_1 128 \
@@ -32,12 +33,22 @@ This repository contains code for training, experiments multitask classification
         --n_classes 12 \
         --p_dropout 0.25 \
         --learning_rate 0.001 \
+        --fix_random False \
         --log_steps 5 \
-        --data_path <Path to data file .npz> \
-        --output_dir <Output dir model> \
-        --project_name="Name project logged on wandb" \
-        --experiment_name="Experiment name logged on wandb" \
-        --log_wandb 
+        --weight_regression 1 \
+        --weight_classify 1 \
+        --weight_grad 1 \
+        --data_path "data/multitask_cls12_regr.npz" \
+        --output_dir "models/multitask_LSTM" \
+        --project_name="Multitask healthcare" \
+        --experiment_name="mtl-LSTM-128-64-orthogonal" \
+        --log_wandb
+
+    ```
+    
+    Open terminal and run train.sh
+    ```
+    sh train.sh
     ```
 
 
