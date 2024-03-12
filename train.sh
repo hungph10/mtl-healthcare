@@ -29,9 +29,9 @@ python train_multitask_orthogonal.py \
     --learning_rate 0.001 \
     --fix_random False \
     --log_steps 5 \
-    --w_regression 1 \
-    --w_classify 1 \
-    --w_grad 1 \
+    --w_regression 0.33 \
+    --w_classify 0.33 \
+    --w_grad 0.33 \
     --data_path "data/multitask_cls12_regr.npz" \
     --output_dir "models/multitask_LSTM" \
     --project_name="Multitask healthcare" \
