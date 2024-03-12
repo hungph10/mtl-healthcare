@@ -11,7 +11,8 @@ This repository contains code for training, experiments multitask classification
    - After downloaded, place the data file in the `data/` folder within this repository.
 
 2. **API Token**: 
-    - Create a file named `.env` and insert your Wandb API token for tracking log:
+    - Create a file named `.env` and insert your Wandb API token for tracking log. To get API token, \
+access *https://wandb.ai/authorize* (login via Google account):
         ```
         WANDB_API_KEY=<Your API token>
         ```
