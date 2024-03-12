@@ -27,7 +27,7 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
         )
 
         self.w_reg = weight_regression
-        self.w_classify = weight_classify
+        self.w_cls = weight_classify
         self.w_grad = weight_grad
 
     def _inner_training_loop(
