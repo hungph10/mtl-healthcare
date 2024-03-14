@@ -30,6 +30,24 @@ class MultitaskTrainer(BaseTrainer):
         
 
     def train(self):
+        history_training = {
+            "train": {
+                "Train Loss": [],
+                "Train Loss Reg": [],
+                "Train Loss Cls": [],
+                "Train MAE": [],
+                "Train Acc": [],
+                "Train F1": []
+            },
+            "test": {
+                "Test Loss": [],
+                "Test Loss Reg": [],
+                "Test Loss Cls": [],
+                "Test MAE": [],
+                "Test Acc": [],
+                "Test F1": []
+            }
+        }
         # Evaluate before training
         test_log = self.evaluate(
             test_dataloader=self.test_dataloader,
@@ -68,6 +86,8 @@ class MultitaskTrainer(BaseTrainer):
                 cls_metric=self.cls_metric,
                 reg_metric=self.reg_metric
             )
+            for k in self.history_training["train"]:
+                self.history_training["train"][k].append(train_log[k])
             test_log = self.evaluate(
                     test_dataloader=self.test_dataloader,
                     model=self.model,
@@ -77,7 +97,8 @@ class MultitaskTrainer(BaseTrainer):
                     reg_metric=self.reg_metric,
                     train_log=train_log
             )
-
+            for k in self.history_training["test"]:
+                self.history_training["test"][k].append(test_log[k])
             if self.log_wandb:
                 wandb.log(test_log)
 
@@ -155,9 +176,11 @@ class MultitaskTrainer(BaseTrainer):
             pbar.set_postfix(**records)
 
         result_training = {
-            "best_cls_log": best_cls_log,
-            "best_reg_log": best_reg_log,
-            "best_multitask_log": best_multitask_log
+            "best_metrics": {
+                "best_cls_log": best_cls_log,
+                "best_reg_log": best_reg_log,
+                "best_multitask_log": best_multitask_log
+            }
         }
         log_path = os.path.join(self.output_dir, "result_training.json") 
         save_json(
@@ -165,6 +188,11 @@ class MultitaskTrainer(BaseTrainer):
             file_path=log_path
         )
 
+        history_path = os.path.join(self.output_dir, "history_training.json")
+        save_json(
+            data=history_training, 
+            file_path=history_path
+        )
 
     def _inner_training_loop(
             self,

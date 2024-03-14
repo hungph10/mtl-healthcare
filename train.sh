@@ -34,6 +34,6 @@ python train_multitask_orthogonal.py \
     --w_grad 0.33 \
     --data_path "data/multitask_cls12_regr.npz" \
     --output_dir "models/multitask_LSTM" \
-    --project_name="Multitask healthcare" \
-    --experiment_name="mtl-LSTM-128-64-orthogonal" \
+    --project_name "Multitask healthcare" \
+    --experiment_name "mtl-LSTM-128-64-orthogonal" \
     # --log_wandb
