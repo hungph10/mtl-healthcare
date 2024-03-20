@@ -1,8 +1,11 @@
 import os
 import wandb
 import torch
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
 from tqdm import tqdm
-
+sns.set()
 from utils import save_json
 from utils import pretty_print_json
 from trainer.base_trainer import BaseTrainer
@@ -30,7 +33,7 @@ class MultitaskTrainer(BaseTrainer):
         
 
     def train(self):
-        history_training = {
+        self.history_training = {
             "train": {
                 "Train Loss": [],
                 "Train Loss Reg": [],
@@ -190,8 +193,21 @@ class MultitaskTrainer(BaseTrainer):
 
         history_path = os.path.join(self.output_dir, "history_training.json")
         save_json(
-            data=history_training, 
+            data=self.history_training, 
             file_path=history_path
+        )
+
+        self.visualize_history_training(
+            history_metrics=self.history_training["train"],
+            save_path=os.path.join(self.output_dir, "train_log.png"),
+            title="Training history",
+            n_epochs=self.epochs
+        )
+        self.visualize_history_training(
+            history_metrics=self.history_training["test"],
+            save_path=os.path.join(self.output_dir, "validate_log.png"),
+            title="Validate history",
+            n_epochs=self.epochs
         )
 
     def _inner_training_loop(
@@ -321,3 +337,32 @@ class MultitaskTrainer(BaseTrainer):
             log_result[k] = round(v, 4)
         log_result.update(train_log)
         return log_result
+    
+    def visualize_history_training(self, history_metrics, save_path, title, n_epochs):
+        all_colors = [
+            [0.6741758166170712, 0.22868885920931392, 0.2406746141609114],
+            [0.059507814505031176, 0.792092060272692, 0.7892093337887586],
+            [0.3463890703039292, 0.6354515889226895, 0.9495167990408476],
+            [0.6590696515728108, 0.09209113056341345, 0.572954686134253],
+            [0.6000209199288403, 0.5327399348368033, 0.8311295309445689],
+            [0.1695333359497634, 0.6360509540985432, 0.13766664393429084]
+        ]
+        epochs = list(range(1, n_epochs + 1))
+        metrics = list(history_metrics.keys())
+        num_metrics = len(metrics)
+        ncols = 3
+        nrows = 2
+        fig, axes = plt.subplots(nrows, ncols, figsize=(30, nrows * 5))
+        fig.suptitle(title, fontsize=16)
+        # Plotting training and testing metrics
+        for idx, metric in enumerate(history_metrics):
+            row = idx // ncols
+            col = idx % ncols
+            ax = axes[row, col]
+            ax.plot(epochs, history_metrics[metric], marker='o', label='Training', color=all_colors[idx])
+            ax.set_xlabel('Epochs')
+            ax.set_ylabel(metric)
+            ax.grid(True)
+
+        fig.savefig(save_path)
+        plt.close(fig)
