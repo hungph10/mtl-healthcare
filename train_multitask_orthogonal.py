@@ -33,6 +33,8 @@ def parse_arguments():
     parser.add_argument('--w_regression', type=float, default=1, help='Weight regression loss')
     parser.add_argument('--w_classify', type=float, default=1, help='Weight classify loss')
     parser.add_argument('--w_grad', type=float, default=1, help='Weight gradient loss')
+    parser.add_argument('--w_trace_norm', type=float, default=1, help='Weight gradient loss')
+
     
     # Location of data and checkpoint 
     parser.add_argument('--data_path', type=str, help='Path to the data training')
@@ -120,6 +122,8 @@ if __name__ == "__main__":
         experiment_name=args.experiment_name,
         weight_regression=args.w_regression,
         weight_classify=args.w_classify,
-        weight_grad=args.w_grad
+        weight_grad=args.w_grad,
+        weight_trace_norm=args.w_trace_norm
+
     )
     trainer.train()
