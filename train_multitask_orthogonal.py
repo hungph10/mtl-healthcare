@@ -28,7 +28,7 @@ def parse_arguments():
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
-    parser.add_argument('--fix_random', type=bool, default=False, help='Learning rate')
+    parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     parser.add_argument('--w_regression', type=float, default=1, help='Weight regression loss')
     parser.add_argument('--w_classify', type=float, default=1, help='Weight classify loss')
@@ -59,11 +59,12 @@ def set_random_seed(seed):
 if __name__ == "__main__":
     args = parse_arguments()
 
-    # set random seed
-    if args.fix_random:
-        print("Fix random seed")
-        set_random_seed(seed=42)
-
+    # Set the random seed
+    if args.seed:
+        print("Initialize parameters with random seed: ", args.seed)
+        set_random_seed(seed=args.seed)
+    else:
+        print("Initialize parameters random without seed")
     # Load data
     data = np.load(args.data_path)
     print("Loading data from {}...".format(args.data_path))
