@@ -78,7 +78,7 @@ class MultitaskOrthogonalTracenormTrainer(MultitaskTrainer):
                 )
 
             loss = self.w_reg * reg_loss + self.w_cls * cls_loss + self.w_grad * grad_loss \
-                   + self.weight_trace_norm*trace_norm_regular
+                    + self.weight_trace_norm*trace_norm_regular
 
             optimizer.zero_grad()
             loss.backward()

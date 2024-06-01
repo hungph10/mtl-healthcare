@@ -5,13 +5,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from tqdm import tqdm
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import numpy as np
 sns.set()
 from utils import save_json
 from utils import pretty_print_json
 from trainer.base_trainer import BaseTrainer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 class MultitaskTrainer(BaseTrainer):
     
@@ -31,7 +32,6 @@ class MultitaskTrainer(BaseTrainer):
         self.cls_metric = cls_metric
         self.reg_metric = reg_metric
         
-
     def train(self):
         self.history_training = {
             "train": {
@@ -199,13 +199,13 @@ class MultitaskTrainer(BaseTrainer):
 
         self.visualize_history_training(
             history_metrics=self.history_training["train"],
-            save_path=os.path.join(self.output_dir, "train_log.png"),
+            save_path=os.path.join(self.output_dir, "train_log"),
             title="Training history",
             n_epochs=self.epochs
         )
         self.visualize_history_training(
             history_metrics=self.history_training["test"],
-            save_path=os.path.join(self.output_dir, "validate_log.png"),
+            save_path=os.path.join(self.output_dir, "validate_log"),
             title="Validate history",
             n_epochs=self.epochs
         )
@@ -291,6 +291,8 @@ class MultitaskTrainer(BaseTrainer):
         total_f1 = 0
         
         model.eval()
+        all_preds = []
+        all_labels = []
         with torch.no_grad():
             for x, y_cls, y_reg in test_dataloader:
                 y_cls = y_cls.view(-1)
@@ -308,7 +310,10 @@ class MultitaskTrainer(BaseTrainer):
                 acc, f1 = cls_metric(cls_output, y_cls)
                 total_acc += acc
                 total_f1 += f1
-                
+
+                # Collecting all predictions and labels for confusion matrix
+                all_preds.append(torch.argmax(cls_output, dim=1).cpu().numpy())
+                all_labels.append(y_cls.cpu().numpy())
                 
 
         avg_loss = total_loss / num_batches
@@ -328,14 +333,18 @@ class MultitaskTrainer(BaseTrainer):
             "Test F1": avg_f1
         }
         
-    #     log_result = {
-    #         "Test Loss": avg_loss,
-    #         "Test Acc": avg_acc,
-    #         "Test F1": avg_f1
-    #     }
         for k, v in log_result.items():
             log_result[k] = round(v, 4)
         log_result.update(train_log)
+        
+        # Calculate and plot confusion matrix
+        all_preds = np.concatenate(all_preds)
+        all_labels = np.concatenate(all_labels)
+        cm = confusion_matrix(all_labels, all_preds)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+        disp.plot()
+        plt.show()
+        
         return log_result
     
     def visualize_history_training(self, history_metrics, save_path, title, n_epochs):
@@ -349,20 +358,16 @@ class MultitaskTrainer(BaseTrainer):
         ]
         epochs = list(range(1, n_epochs + 1))
         metrics = list(history_metrics.keys())
-        num_metrics = len(metrics)
-        ncols = 3
-        nrows = 2
-        fig, axes = plt.subplots(nrows, ncols, figsize=(30, nrows * 5))
-        fig.suptitle(title, fontsize=16)
-        # Plotting training and testing metrics
-        for idx, metric in enumerate(history_metrics):
-            row = idx // ncols
-            col = idx % ncols
-            ax = axes[row, col]
-            ax.plot(epochs, history_metrics[metric], marker='o', label='Training', color=all_colors[idx])
-            ax.set_xlabel('Epochs')
-            ax.set_ylabel(metric)
-            ax.grid(True)
-
-        fig.savefig(save_path)
-        plt.close(fig)
+        
+        for idx, metric in enumerate(metrics):
+            plt.figure(figsize=(10, 6))
+            plt.plot(epochs, history_metrics[metric], label='Training', color=all_colors[idx])
+            plt.xlabel('Epochs')
+            plt.ylabel(metric)
+            plt.title(f"{title} - {metric}")
+            plt.legend()
+            # Save each figure separately
+            individual_save_path = save_path + f"_{metric}.png"
+            plt.savefig(individual_save_path)
+            plt.show()  # Hiển thị trong Jupyter Notebook
+            plt.close()
