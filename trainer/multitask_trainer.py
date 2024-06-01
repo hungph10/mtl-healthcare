@@ -311,7 +311,6 @@ class MultitaskTrainer(BaseTrainer):
                 total_acc += acc
                 total_f1 += f1
 
-                # Collecting all predictions and labels for confusion matrix
                 all_preds.append(torch.argmax(cls_output, dim=1).cpu().numpy())
                 all_labels.append(y_cls.cpu().numpy())
                 
@@ -337,7 +336,6 @@ class MultitaskTrainer(BaseTrainer):
             log_result[k] = round(v, 4)
         log_result.update(train_log)
         
-        # Calculate and plot confusion matrix
         all_preds = np.concatenate(all_preds)
         all_labels = np.concatenate(all_labels)
         cm = confusion_matrix(all_labels, all_preds)
@@ -366,8 +364,7 @@ class MultitaskTrainer(BaseTrainer):
             plt.ylabel(metric)
             plt.title(f"{title} - {metric}")
             plt.legend()
-            # Save each figure separately
             individual_save_path = save_path + f"_{metric}.png"
             plt.savefig(individual_save_path)
-            plt.show()  # Hiển thị trong Jupyter Notebook
+            plt.show()  
             plt.close()
