@@ -22,6 +22,7 @@ class BaseTrainer:
         epochs,
         output_dir,
         log_steps,
+        log_console=True,
         log_wandb=False,
         project_name=None,
         experiment_name=None
@@ -51,6 +52,7 @@ class BaseTrainer:
         self.optimizer = optimizer
         self.batch_size = batch_size
         self.epochs = epochs
+        self.log_console = log_console
         self.log_steps = log_steps
         self.output_dir = output_dir
         if not os.path.exists(output_dir):
@@ -66,8 +68,10 @@ class BaseTrainer:
     def count_parameters(self):
         return sum(p.numel() for p in self.model.parameters() if p.requires_grad)
 
-    @staticmethod
-    def get_log_message(epoch, metric, before, after, patient=False):
+    
+    def get_log_message(self, epoch, metric, before, after, patient=False):
+        if not self.log_console: 
+            return None
         if patient:
             log_message = "Epoch {}: {} is {}. Don't improve from {}".format(
                 epoch, metric, after, before

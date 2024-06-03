@@ -18,13 +18,13 @@ class MultitaskTrainer(BaseTrainer):
     
     def __init__(
         self, model, train_dataset, eval_dataset,
-        optimizer, batch_size, epochs, output_dir,
+        optimizer, batch_size, epochs, output_dir, log_console,
         log_steps, log_wandb, project_name, experiment_name,
         cls_loss_fn, reg_loss_fn, cls_metric, reg_metric
     ):
         super().__init__(
             model, train_dataset, eval_dataset, optimizer,
-            batch_size, epochs, output_dir, log_steps,
+            batch_size, epochs, output_dir, log_steps, log_console,
             log_wandb, project_name, experiment_name
         )
         self.cls_loss_fn = cls_loss_fn
@@ -113,7 +113,8 @@ class MultitaskTrainer(BaseTrainer):
                     before=round(max_f1, 4),
                     after=round(test_log["Test F1"], 4)
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
                 # Update record classify metric
                 max_f1 = test_log["Test F1"]
                 best_cls_log = test_log
@@ -132,7 +133,8 @@ class MultitaskTrainer(BaseTrainer):
                     before=round(min_mae, 4),
                     after=round(test_log["Test MAE"], 4)
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
                 # Update record regression metric 
                 min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
@@ -153,7 +155,8 @@ class MultitaskTrainer(BaseTrainer):
                     after=round(test_log["Test Loss"], 4),
                     patient=True
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
             else:
                 patient = 0
                 # Update record multitask loss

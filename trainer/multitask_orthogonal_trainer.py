@@ -14,14 +14,14 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
 
     def __init__(
             self, model, train_dataset, eval_dataset, \
-            optimizer, batch_size, epochs, output_dir, \
+            optimizer, batch_size, epochs, output_dir, log_console,\
             log_steps, log_wandb, project_name, experiment_name, \
             cls_loss_fn, reg_loss_fn, cls_metric, reg_metric, \
             weight_regression, weight_classify, weight_grad
         ):
         super().__init__(
             model, train_dataset, eval_dataset, optimizer, batch_size, \
-            epochs, output_dir, log_steps, log_wandb, project_name, \
+            epochs, output_dir, log_steps, log_wandb, log_console, project_name, \
             experiment_name, cls_loss_fn, reg_loss_fn, cls_metric, reg_metric
         )
 
