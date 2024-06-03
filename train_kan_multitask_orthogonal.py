@@ -39,7 +39,8 @@ def parse_arguments():
     parser.add_argument('--data_path', type=str, help='Path to the data training')
     parser.add_argument('--output_dir', type=str, help='Output directory for saving models')
 
-    # WandDB logging
+    # Logging
+    parser.add_argument('--log_console', action='store_true', help='Enable console logging')
     parser.add_argument('--log_wandb', action='store_true', help='Enable wandb logging')
     parser.add_argument('--project_name', type=str, default='Project demo', help='WandB project name')
     parser.add_argument('--experiment_name', type=str, default='Experiment demo', help='WandB experiment name')
@@ -117,6 +118,7 @@ if __name__ == "__main__":
         epochs=args.epochs,
         output_dir=args.output_dir,
         log_steps=args.log_steps,
+        log_console=args.log_console,
         log_wandb=args.log_wandb,
         project_name=args.project_name,
         experiment_name=args.experiment_name,

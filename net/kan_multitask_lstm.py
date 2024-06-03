@@ -16,8 +16,8 @@ class KANMultitaskLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_size_1, batch_first=True)
         self.lstm2 = nn.LSTM(hidden_size_1, hidden_size_2, batch_first=True)
         self.dropout = nn.Dropout(dropout)
-        self.cls = KAN(hidden_size_1, 1, output_size)
-        self.reg = KAN(hidden_size_2, 1, 1)
+        self.cls = KAN(layers_hidden=[hidden_size_1, 1, output_size])
+        self.reg = KAN(layers_hidden=[hidden_size_2, 1, 1])
 
     def forward(self, x):
         out, _ = self.lstm(x)

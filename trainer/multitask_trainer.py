@@ -17,15 +17,37 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class MultitaskTrainer(BaseTrainer):
     
     def __init__(
-        self, model, train_dataset, eval_dataset,
-        optimizer, batch_size, epochs, output_dir, log_console,
-        log_steps, log_wandb, project_name, experiment_name,
-        cls_loss_fn, reg_loss_fn, cls_metric, reg_metric
+        self,
+        model,
+        train_dataset,
+        eval_dataset,
+        optimizer,
+        batch_size,
+        epochs,
+        output_dir,
+        log_console,
+        log_steps,
+        log_wandb,
+        project_name,
+        experiment_name,
+        cls_loss_fn,
+        reg_loss_fn,
+        cls_metric,
+        reg_metric
     ):
         super().__init__(
-            model, train_dataset, eval_dataset, optimizer,
-            batch_size, epochs, output_dir, log_steps, log_console,
-            log_wandb, project_name, experiment_name
+            model=model,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            optimizer=optimizer,
+            batch_size=batch_size,
+            epochs=epochs,
+            output_dir=output_dir,
+            log_console=log_console,
+            log_steps=log_steps,
+            log_wandb=log_wandb,
+            project_name=project_name,
+            experiment_name=experiment_name
         )
         self.cls_loss_fn = cls_loss_fn
         self.reg_loss_fn = reg_loss_fn
@@ -283,6 +305,7 @@ class MultitaskTrainer(BaseTrainer):
         cls_metric,
         reg_metric,
         train_log={},
+        plot_confusion_matrix=False
     ):
         num_batches = len(test_dataloader)
         total_loss = 0
@@ -339,12 +362,13 @@ class MultitaskTrainer(BaseTrainer):
             log_result[k] = round(v, 4)
         log_result.update(train_log)
         
-        all_preds = np.concatenate(all_preds)
-        all_labels = np.concatenate(all_labels)
-        cm = confusion_matrix(all_labels, all_preds)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-        disp.plot()
-        plt.show()
+        if plot_confusion_matrix:
+            all_preds = np.concatenate(all_preds)
+            all_labels = np.concatenate(all_labels)
+            cm = confusion_matrix(all_labels, all_preds)
+            disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+            disp.plot()
+            plt.show()
         
         return log_result
     
