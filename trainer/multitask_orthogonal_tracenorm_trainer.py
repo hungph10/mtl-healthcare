@@ -14,16 +14,45 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class MultitaskOrthogonalTracenormTrainer(MultitaskTrainer):
 
     def __init__(
-            self, model, train_dataset, eval_dataset, \
-            optimizer, batch_size, epochs, output_dir, \
-            log_steps, log_wandb, project_name, experiment_name, \
-            cls_loss_fn, reg_loss_fn, cls_metric, reg_metric, \
-            weight_regression, weight_classify, weight_grad, weight_trace_norm
+            self,
+            model,
+            train_dataset,
+            eval_dataset,
+            optimizer,
+            batch_size,
+            epochs,
+            output_dir,
+            log_steps,
+            log_wandb,
+            log_console,
+            project_name,
+            experiment_name,
+            cls_loss_fn, 
+            reg_loss_fn,
+            cls_metric,
+            reg_metric,
+            weight_regression,
+            weight_classify,
+            weight_grad,
+            weight_trace_norm
     ):
         super().__init__(
-            model, train_dataset, eval_dataset, optimizer, batch_size, \
-            epochs, output_dir, log_steps, log_wandb, project_name, \
-            experiment_name, cls_loss_fn, reg_loss_fn, cls_metric, reg_metric
+            model=model,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset ,
+            optimizer=optimizer,
+            log_console=log_console,
+            log_steps=log_steps,
+            log_wandb=log_wandb,
+            project_name=project_name,
+            experiment_name=experiment_name,
+            cls_loss_fn=cls_loss_fn,
+            reg_loss_fn=reg_loss_fn,
+            cls_metric=cls_metric,
+            reg_metric=reg_metric,
+            batch_size=batch_size,
+            epochs=epochs,
+            output_dir=output_dir
         )
 
         self.w_reg = weight_regression
