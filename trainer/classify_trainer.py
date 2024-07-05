@@ -98,7 +98,8 @@ class ClassifyTrainer(BaseTrainer):
                     before=round(max_f1, 4),
                     after=round(test_log["Test F1"], 4)
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
                 # Update record classify metric
                 max_f1 = test_log["Test F1"]
                 best_cls_log = test_log
@@ -119,7 +120,8 @@ class ClassifyTrainer(BaseTrainer):
                     after=round(test_log["Test Loss"], 4),
                     patient=True
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
             else:
                 patient = 0
                 # Update record loss
