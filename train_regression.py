@@ -23,6 +23,7 @@ def parse_arguments():
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
+    parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     
     # Location of data and checkpoint 
@@ -30,6 +31,7 @@ def parse_arguments():
     parser.add_argument('--output_dir', type=str, help='Output directory for saving models')
 
     # WandB logging
+    parser.add_argument('--log_console', action='store_true', help='Enable console logging')
     parser.add_argument('--log_wandb', action='store_true', help='Enable WandB logging')
     parser.add_argument('--project_name', type=str, default='Project demo', help='WandB project name')
     parser.add_argument('--experiment_name', type=str, default='Experiment demo', help='WandB experiment name')
@@ -88,6 +90,7 @@ if __name__ == "__main__":
         batch_size=args.batch_size,
         epochs=args.epochs,
         output_dir=args.output_dir,
+        log_console=args.log_console,
         log_steps=args.log_steps,
         log_wandb=args.log_wandb,
         project_name=args.project_name,

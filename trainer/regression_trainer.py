@@ -13,15 +13,35 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class RegressionTrainer(BaseTrainer):
     
     def __init__(
-        self, model, train_dataset, eval_dataset,
-        optimizer, batch_size, epochs, output_dir,
-        log_steps, log_wandb, project_name, experiment_name,
-        reg_loss_fn, reg_metric
+        self,
+        model,
+        train_dataset,
+        eval_dataset,
+        optimizer,
+        batch_size,
+        epochs, 
+        output_dir,
+        log_console,
+        log_steps,
+        log_wandb,
+        project_name, 
+        experiment_name,
+        reg_loss_fn,
+        reg_metric
     ):
         super().__init__(
-            model, train_dataset, eval_dataset, optimizer,
-            batch_size, epochs, output_dir, log_steps,
-            log_wandb, project_name, experiment_name
+            model=model,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            optimizer=optimizer,
+            batch_size=batch_size,
+            epochs=epochs,
+            output_dir=output_dir,
+            log_steps=log_steps,
+            log_console=log_console,
+            log_wandb=log_wandb,
+            project_name=project_name,
+            experiment_name=experiment_name
         )
         self.reg_loss_fn = reg_loss_fn
         self.reg_metric = reg_metric
