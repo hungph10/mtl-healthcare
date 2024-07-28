@@ -28,6 +28,18 @@ class RegressionTrainer(BaseTrainer):
         
 
     def train(self):
+        self.history_training = {
+            "train": {
+                "Train Loss Reg": [],
+                "Train MAE": []
+            },
+            "test": {
+                "Test Loss Reg": [],
+                "Test MAE": []
+            }
+        }
+
+
         # Evaluate before training
         test_log = self.evaluate(
             test_dataloader=self.test_dataloader,
@@ -36,7 +48,7 @@ class RegressionTrainer(BaseTrainer):
             reg_metric=self.reg_metric
         )
         min_mae = test_log["Test MAE"]
-        min_loss = test_log["Test Loss"]
+        min_loss = test_log["Test Loss Reg"]
         print("Evaluate before training:", flush=True)
         pretty_print_json(test_log)
 
@@ -92,20 +104,20 @@ class RegressionTrainer(BaseTrainer):
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
                 
             # Save best multitask checkpoint 
-            if test_log["Test Loss"] > min_loss:
+            if test_log["Test Loss Reg"] > min_loss:
                 patient += 1
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Multitask test loss",
                     before=round(min_loss, 4),
-                    after=round(test_log["Test Loss"], 4),
+                    after=round(test_log["Test Loss Reg"], 4),
                     patient=True
                 )
                 tqdm.write(log_message, end="\n\n")
             else:
                 patient = 0
                 # Update record multitask loss
-                min_loss = test_log["Test Loss"]
+                min_loss = test_log["Test Loss Reg"]
                 best_loss_log = test_log
                 
                 checkpoint_path = os.path.join(
@@ -119,7 +131,7 @@ class RegressionTrainer(BaseTrainer):
             records = {
                 "min_mae_test": round(min_mae, 2),
                 "min_loss_test": round(min_loss, 2),
-                "train_loss": round(test_log["Train Loss"], 2),
+                "train_loss": round(test_log["Train Loss Reg"], 2),
             }  
             pbar.set_postfix(**records)
 
@@ -166,7 +178,7 @@ class RegressionTrainer(BaseTrainer):
         avg_mae = total_mae / num_batches
         
         log_result = {
-            "Train Loss": avg_loss_reg,
+            "Train Loss Reg": avg_loss_reg,
             "Train MAE": avg_mae
         }
         
@@ -199,12 +211,12 @@ class RegressionTrainer(BaseTrainer):
         avg_mae = total_mae / num_batches
         
         log_result = {
-            "Test Loss": avg_loss_reg,
+            "Test Loss Reg": avg_loss_reg,
             "Test MAE": avg_mae
         }
         
     #     log_result = {
-    #         "Test Loss": avg_loss,
+    #         "Test Loss Reg": avg_loss,
     #         "Test Acc": avg_acc,
     #         "Test F1": avg_f1
     #     }
