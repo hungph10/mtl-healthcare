@@ -67,7 +67,7 @@ class ClassifyTrainer(BaseTrainer):
             cls_metric=self.cls_metric,
         )
         max_f1 = test_log["Test F1"]
-        min_loss = test_log["Test Loss"]
+        min_loss = test_log["Test Loss Cls"]
         print("Evaluate before training:", flush=True)
         pretty_print_json(test_log)
 
@@ -127,13 +127,13 @@ class ClassifyTrainer(BaseTrainer):
                 self.save_checkpoint(checkpoint_path=checkpoint_path)
                 
             # Save best loss checkpoint 
-            if test_log["Test Loss"] > min_loss:
+            if test_log["Test Loss Cls"] > min_loss:
                 patient += 1
                 log_message = self.get_log_message(
                     epoch=epoch,
-                    metric= "Test loss",
+                    metric= "Test Loss Cls",
                     before=round(min_loss, 4),
-                    after=round(test_log["Test Loss"], 4),
+                    after=round(test_log["Test Loss Cls"], 4),
                     patient=True
                 )
                 if log_message:
@@ -141,7 +141,7 @@ class ClassifyTrainer(BaseTrainer):
             else:
                 patient = 0
                 # Update record loss
-                min_loss = test_log["Test Loss"]
+                min_loss = test_log["Test Loss Cls"]
                 best_loss_log = test_log
                 
                 checkpoint_path = os.path.join(
@@ -155,7 +155,7 @@ class ClassifyTrainer(BaseTrainer):
             records = {
                 "max_f1_test": round(max_f1, 2),
                 "min_loss_test": round(min_loss, 2),
-                "train_loss": round(test_log["Train Loss"], 2),
+                "train_loss": round(test_log["Train Loss Cls"], 2),
             }  
             pbar.set_postfix(**records)
 
