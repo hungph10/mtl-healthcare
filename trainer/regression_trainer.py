@@ -116,7 +116,8 @@ class RegressionTrainer(BaseTrainer):
                     before=round(min_mae, 4),
                     after=round(test_log["Test MAE"], 4)
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
                 # Update record regression metric 
                 min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
