@@ -20,7 +20,6 @@ def parse_arguments():
     parser.add_argument('--input_dim', type=int, help='Input dimension')
     parser.add_argument('--n_hidden_1', type=int, help='Number of hidden units in the LSTM layer')
     parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
-    parser.add_argument('--n_classes', type=int, help='Number of output classes')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
     parser.add_argument('--seed', type=int, help='Set the random seed')
@@ -63,7 +62,6 @@ if __name__ == "__main__":
         input_size=args.input_dim,
         hidden_size_1=args.n_hidden_1,
         hidden_size_2=args.n_hidden_2,
-        output_size=args.n_classes,
         dropout=args.p_dropout
     )
     model = model.to(device)

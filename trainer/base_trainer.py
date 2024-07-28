@@ -38,17 +38,7 @@ class BaseTrainer:
             batch_size=batch_size,
             shuffle=False
         )
-        self.model = model
-        self.train_dataloader = DataLoader(
-            dataset=train_dataset,
-            batch_size=batch_size,
-            shuffle=True
-        )
-        self.test_dataloader = DataLoader(
-            dataset=eval_dataset,
-            batch_size=batch_size,
-            shuffle=False
-        )
+
         self.optimizer = optimizer
         self.batch_size = batch_size
         self.epochs = epochs

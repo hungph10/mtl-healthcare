@@ -92,6 +92,8 @@ class RegressionTrainer(BaseTrainer):
                 optimizer=self.optimizer,
                 reg_metric=self.reg_metric
             )
+            for k in self.history_training["train"]:
+                self.history_training["train"][k].append(train_log[k])
             test_log = self.evaluate(
                     test_dataloader=self.test_dataloader,
                     model=self.model,
@@ -99,6 +101,8 @@ class RegressionTrainer(BaseTrainer):
                 reg_metric=self.reg_metric,
                     train_log=train_log
             )
+            for k in self.history_training["test"]:
+                self.history_training["test"][k].append(test_log[k])
 
             if self.log_wandb:
                 wandb.log(test_log)
@@ -163,6 +167,12 @@ class RegressionTrainer(BaseTrainer):
         save_json(
             data=result_training,
             file_path=log_path
+        )
+
+        history_path = os.path.join(self.output_dir, "history_training.json")
+        save_json(
+            data=self.history_training, 
+            file_path=history_path
         )
 
 
@@ -235,11 +245,7 @@ class RegressionTrainer(BaseTrainer):
             "Test MAE": avg_mae
         }
         
-    #     log_result = {
-    #         "Test Loss Reg": avg_loss,
-    #         "Test Acc": avg_acc,
-    #         "Test F1": avg_f1
-    #     }
+
         for k, v in log_result.items():
             log_result[k] = round(v, 4)
         log_result.update(train_log)

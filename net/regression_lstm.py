@@ -8,15 +8,14 @@ class RegressionLSTM(nn.Module):
             input_size,
             hidden_size_1,
             hidden_size_2,
-            dropout,
-            output_size=1
+            dropout
         ):
         super(RegressionLSTM, self).__init__()
 
         self.lstm = nn.LSTM(input_size, hidden_size_1, batch_first=True)
         self.lstm2 = nn.LSTM(hidden_size_1, hidden_size_2, batch_first=True)
         self.dropout = nn.Dropout(dropout)
-        self.reg = nn.Linear(hidden_size_2, output_size)
+        self.reg = nn.Linear(hidden_size_2, 1)
 
         
     def forward(self, x):
