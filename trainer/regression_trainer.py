@@ -138,7 +138,8 @@ class RegressionTrainer(BaseTrainer):
                     after=round(test_log["Test Loss Reg"], 4),
                     patient=True
                 )
-                tqdm.write(log_message, end="\n\n")
+                if log_message:
+                    tqdm.write(log_message, end="\n\n")
             else:
                 patient = 0
                 # Update record multitask loss
