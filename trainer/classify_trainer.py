@@ -47,6 +47,18 @@ class ClassifyTrainer(BaseTrainer):
         self.cls_metric = cls_metric
         
     def train(self):
+        self.history_training = {
+            "train": {
+                "Train Loss Cls": [],
+                "Train Acc": [],
+                "Train F1": []
+            },
+            "test": {
+                "Test Loss Cls": [],
+                "Test Acc": [],
+                "Test F1": []
+            }
+        }
         # Evaluate before training
         test_log = self.evaluate(
             test_dataloader=self.test_dataloader,
@@ -79,6 +91,8 @@ class ClassifyTrainer(BaseTrainer):
                 optimizer=self.optimizer,
                 cls_metric=self.cls_metric,
             )
+            for k in self.history_training["train"]:
+                self.history_training["train"][k].append(train_log[k])
             test_log = self.evaluate(
                     test_dataloader=self.test_dataloader,
                     model=self.model,
@@ -86,6 +100,8 @@ class ClassifyTrainer(BaseTrainer):
                     cls_metric=self.cls_metric,
                     train_log=train_log
             )
+            for k in self.history_training["test"]:
+                self.history_training["test"][k].append(test_log[k])
 
             if self.log_wandb:
                 wandb.log(test_log)
@@ -153,6 +169,11 @@ class ClassifyTrainer(BaseTrainer):
             file_path=log_path
         )
 
+        history_path = os.path.join(self.output_dir, "history_training.json")
+        save_json(
+            data=self.history_training, 
+            file_path=history_path
+        )
 
     @staticmethod
     def _inner_training_loop(
@@ -190,7 +211,7 @@ class ClassifyTrainer(BaseTrainer):
         avg_f1 = total_acc / num_batches
         
         log_result = {
-            "Train Loss": avg_loss_cls,
+            "Train Loss Cls": avg_loss_cls,
             "Train Acc": avg_acc,
             "Train F1": avg_f1
         }
@@ -231,7 +252,7 @@ class ClassifyTrainer(BaseTrainer):
         avg_f1 = total_acc / num_batches
         
         log_result = {
-            "Test Loss": avg_loss_cls,
+            "Test Loss Cls": avg_loss_cls,
             "Test Acc": avg_acc,
             "Test F1": avg_f1
         }
