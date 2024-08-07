@@ -68,8 +68,8 @@ class ClassifyTrainer(BaseTrainer):
         )
         max_f1 = test_log["Test F1"]
         min_loss = test_log["Test Loss Cls"]
-        print("Evaluate before training:", flush=True)
-        pretty_print_json(test_log)
+        # print("Evaluate before training:", flush=True)
+        # pretty_print_json(test_log)
 
         best_cls_log = {}
         best_loss_log = {}

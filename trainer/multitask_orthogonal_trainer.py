@@ -50,10 +50,11 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
             cls_loss_fn=cls_loss_fn,
             reg_loss_fn=reg_loss_fn,
             cls_metric=cls_metric,
-            reg_metric=reg_metric
+            reg_metric=reg_metric,
+            weight_regression=weight_regression,
+            weight_classify=weight_classify
         )
-        self.w_reg = weight_regression
-        self.w_cls = weight_classify
+        
         self.w_grad = weight_grad
 
     def _inner_training_loop(

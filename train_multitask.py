@@ -30,6 +30,10 @@ def parse_arguments():
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
     parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
+
+    # Weight for aggregated loss
+    parser.add_argument('--w_regression', type=float, default=1, help='Weight regression loss')
+    parser.add_argument('--w_classify', type=float, default=1, help='Weight classify loss')
     
     # Location of data and checkpoint 
     parser.add_argument('--data_path', type=str, help='Path to the data training')
@@ -100,7 +104,7 @@ if __name__ == "__main__":
         lr=args.learning_rate
     )
 
-    print("Training info:\n")
+    print("Training info:")
     print("- Train data: {} samples".format(len(train_dataset)))
     print("- Dev data: {} samples".format(len(dev_dataset)))
     print("- Batch size: {}".format(args.batch_size))
@@ -123,6 +127,8 @@ if __name__ == "__main__":
         log_steps=args.log_steps,
         log_wandb=args.log_wandb,
         project_name=args.project_name,
-        experiment_name=args.experiment_name
+        experiment_name=args.experiment_name,
+        weight_regression=args.w_regression,
+        weight_classify=args.w_classify,
     )
     trainer.train()

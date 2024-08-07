@@ -69,8 +69,8 @@ class RegressionTrainer(BaseTrainer):
         )
         min_mae = test_log["Test MAE"]
         min_loss = test_log["Test Loss Reg"]
-        print("Evaluate before training:", flush=True)
-        pretty_print_json(test_log)
+        # print("Evaluate before training:", flush=True)
+        # pretty_print_json(test_log)
 
         best_reg_log = {}
         best_loss_log = {}

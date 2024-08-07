@@ -33,7 +33,9 @@ class MultitaskTrainer(BaseTrainer):
         cls_loss_fn,
         reg_loss_fn,
         cls_metric,
-        reg_metric
+        reg_metric,
+        weight_regression,
+        weight_classify
     ):
         super().__init__(
             model=model,
@@ -53,6 +55,9 @@ class MultitaskTrainer(BaseTrainer):
         self.reg_loss_fn = reg_loss_fn
         self.cls_metric = cls_metric
         self.reg_metric = reg_metric
+
+        self.w_reg = weight_regression
+        self.w_cls = weight_classify
         
     def train(self):
         self.history_training = {
@@ -85,8 +90,8 @@ class MultitaskTrainer(BaseTrainer):
         max_f1 = test_log["Test F1"]
         min_mae = test_log["Test MAE"]
         min_loss = test_log["Test Loss"]
-        print("Evaluate before training:", flush=True)
-        pretty_print_json(test_log)
+        # print("Evaluate before training:", flush=True)
+        # pretty_print_json(test_log)
 
         best_cls_log = {}
         best_reg_log = {}
@@ -262,7 +267,7 @@ class MultitaskTrainer(BaseTrainer):
             y_cls = y_cls.view(-1)
             cls_loss = cls_loss_fn(cls_output, y_cls)
             
-            loss = reg_loss + cls_loss
+            loss = self.w_reg * reg_loss + self.w_cls * cls_loss
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

@@ -4,7 +4,6 @@ list_batch_size = [64, 128, 256, 512, 1024]
 list_learning_rate = [10e-4, 5 * 10e-4, 10e-3, 5 * 10e-3]
 list_hidden_1 = [64, 128, 256, 512, 1024]
 list_hidden_2 = [64, 128, 256, 512, 1024]
-list_
 
 
 if __name__ == "__main__":

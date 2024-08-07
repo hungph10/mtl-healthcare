@@ -30,6 +30,8 @@ def parse_arguments():
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
     parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
+
+    # Weight for aggregated loss
     parser.add_argument('--w_regression', type=float, default=1, help='Weight regression loss')
     parser.add_argument('--w_classify', type=float, default=1, help='Weight classify loss')
     parser.add_argument('--w_grad', type=float, default=1, help='Weight gradient loss')

@@ -6,12 +6,12 @@ import numpy as np
 from utils import save_json
 from utils import pretty_print_json
 from trace_norm import TensorTraceNorm
-from trainer.multitask_trainer import MultitaskTrainer
+from trainer.multitask_orthogonal_trainer import MultitaskOrthogonalTrainer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-class MultitaskOrthogonalTracenormTrainer(MultitaskTrainer):
+class MultitaskOrthogonalTracenormTrainer(MultitaskOrthogonalTrainer):
 
     def __init__(
             self,
@@ -52,12 +52,12 @@ class MultitaskOrthogonalTracenormTrainer(MultitaskTrainer):
             reg_metric=reg_metric,
             batch_size=batch_size,
             epochs=epochs,
-            output_dir=output_dir
+            output_dir=output_dir,
+            weight_regression=weight_regression,
+            weight_classify=weight_classify,
+            weight_grad=weight_grad
         )
 
-        self.w_reg = weight_regression
-        self.w_cls = weight_classify
-        self.w_grad = weight_grad
         self.weight_trace_norm = weight_trace_norm
 
     def _inner_training_loop(
