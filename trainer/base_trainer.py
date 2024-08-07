@@ -17,6 +17,7 @@ class BaseTrainer:
         model,
         train_dataset,
         eval_dataset,
+        test_dataset,
         optimizer,
         batch_size,
         epochs,
@@ -33,8 +34,13 @@ class BaseTrainer:
             batch_size=batch_size,
             shuffle=True
         )
-        self.test_dataloader = DataLoader(
+        self.dev_dataloader = DataLoader(
             dataset=eval_dataset,
+            batch_size=batch_size,
+            shuffle=False
+        )
+        self.test_dataloader = DataLoader(
+            dataset=test_dataset,
             batch_size=batch_size,
             shuffle=False
         )

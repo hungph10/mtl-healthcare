@@ -18,6 +18,7 @@ class MultitaskOrthogonalTracenormTrainer(MultitaskOrthogonalTrainer):
             model,
             train_dataset,
             eval_dataset,
+            test_dataset,
             optimizer,
             batch_size,
             epochs,
@@ -39,7 +40,8 @@ class MultitaskOrthogonalTracenormTrainer(MultitaskOrthogonalTrainer):
         super().__init__(
             model=model,
             train_dataset=train_dataset,
-            eval_dataset=eval_dataset ,
+            eval_dataset=eval_dataset,
+            test_dataset=test_dataset,
             optimizer=optimizer,
             log_console=log_console,
             log_steps=log_steps,

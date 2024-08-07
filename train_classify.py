@@ -102,6 +102,7 @@ if __name__ == "__main__":
         model=model,
         train_dataset=train_dataset,
         eval_dataset=dev_dataset,
+        test_dataset=test_dataset,
         cls_loss_fn=cls_loss_fn,
         cls_metric=cls_metric,
         optimizer=optimizer,

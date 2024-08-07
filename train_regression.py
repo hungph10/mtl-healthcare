@@ -86,6 +86,7 @@ if __name__ == "__main__":
         model=model,
         train_dataset=train_dataset,
         eval_dataset=dev_dataset,
+        test_dataset=test_dataset,
         reg_loss_fn=reg_loss_fn,
         reg_metric=reg_metric,
         optimizer=optimizer,

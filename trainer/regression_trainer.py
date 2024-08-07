@@ -17,6 +17,7 @@ class RegressionTrainer(BaseTrainer):
         model,
         train_dataset,
         eval_dataset,
+        test_dataset,
         optimizer,
         batch_size,
         epochs, 
@@ -33,6 +34,7 @@ class RegressionTrainer(BaseTrainer):
             model=model,
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
+            test_dataset=test_dataset,
             optimizer=optimizer,
             batch_size=batch_size,
             epochs=epochs,
@@ -62,7 +64,7 @@ class RegressionTrainer(BaseTrainer):
 
         # Evaluate before training
         test_log = self.evaluate(
-            test_dataloader=self.test_dataloader,
+            test_dataloader=self.dev_dataloader,
             model=self.model,
             compute_reg_loss=self.reg_loss_fn,
             reg_metric=self.reg_metric
@@ -73,7 +75,10 @@ class RegressionTrainer(BaseTrainer):
         # pretty_print_json(test_log)
 
         best_reg_log = {}
-        best_loss_log = {}
+        best_reg_checkpoint_path = os.path.join(
+            self.output_dir,
+            "best_reg.pth"
+        )
         
         # Training
         self.model.to(device)
@@ -95,7 +100,7 @@ class RegressionTrainer(BaseTrainer):
             for k in self.history_training["train"]:
                 self.history_training["train"][k].append(train_log[k])
             test_log = self.evaluate(
-                    test_dataloader=self.test_dataloader,
+                    test_dataloader=self.dev_dataloader,
                     model=self.model,
                     compute_reg_loss=self.reg_loss_fn,
                 reg_metric=self.reg_metric,
@@ -122,35 +127,8 @@ class RegressionTrainer(BaseTrainer):
                 min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
 
-                checkpoint_path = os.path.join(
-                    self.output_dir,
-                    "best_reg.pth"
-                )
-                self.save_checkpoint(checkpoint_path=checkpoint_path)
+                self.save_checkpoint(checkpoint_path=best_reg_checkpoint_path)
                 
-            # Save best multitask checkpoint 
-            if test_log["Test Loss Reg"] > min_loss:
-                patient += 1
-                log_message = self.get_log_message(
-                    epoch=epoch,
-                    metric="Multitask test loss",
-                    before=round(min_loss, 4),
-                    after=round(test_log["Test Loss Reg"], 4),
-                    patient=True
-                )
-                if log_message:
-                    tqdm.write(log_message, end="\n\n")
-            else:
-                patient = 0
-                # Update record multitask loss
-                min_loss = test_log["Test Loss Reg"]
-                best_loss_log = test_log
-                
-                checkpoint_path = os.path.join(
-                    self.output_dir,
-                    "best_multitask.pth"
-                )
-                self.save_checkpoint(checkpoint_path=checkpoint_path)
         #     if patient > 100:
         #         print(f"Early stopping at epoch {epoch + 1}!")
         #         break
@@ -161,17 +139,47 @@ class RegressionTrainer(BaseTrainer):
             }  
             pbar.set_postfix(**records)
 
+        last_checkpoint_test_log = self.evaluate(
+            test_dataloader=self.test_dataloader,
+            model=self.model,
+            compute_cls_loss=self.cls_loss_fn,
+            compute_reg_loss=self.reg_loss_fn,
+            cls_metric=self.cls_metric,
+            reg_metric=self.reg_metric
+        )
+
+        self.model.load_state_dict(torch.load(best_reg_checkpoint_path))
+        best_reg_checkpoint_test_log = self.evaluate(
+            test_dataloader=self.test_dataloader,
+            model=self.model,
+            compute_cls_loss=self.cls_loss_fn,
+            compute_reg_loss=self.reg_loss_fn,
+            cls_metric=self.cls_metric,
+            reg_metric=self.reg_metric
+        )
+
+
         result_training = {
-            "best_reg_log": best_reg_log,
-            "best_loss_log": best_loss_log
+            "dev": {
+                "best_reg_log": best_reg_log
+            },
+            "test": {
+                "last_checkpoint": last_checkpoint_test_log,
+                "best_reg_checkpoint": best_reg_checkpoint_test_log
+            }
         }
         log_path = os.path.join(self.output_dir, "result_training.json") 
         save_json(
             data=result_training,
             file_path=log_path
         )
+        print("Result training:")
+        pretty_print_json(result_training)
 
         history_path = os.path.join(self.output_dir, "history_training.json")
+        
+
+        best_checkpoint_reg = self.model.lo 
         save_json(
             data=self.history_training, 
             file_path=history_path

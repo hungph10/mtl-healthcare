@@ -21,6 +21,7 @@ class MultitaskTrainer(BaseTrainer):
         model,
         train_dataset,
         eval_dataset,
+        test_dataset,
         optimizer,
         batch_size,
         epochs,
@@ -41,6 +42,7 @@ class MultitaskTrainer(BaseTrainer):
             model=model,
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
+            test_dataset=test_dataset,
             optimizer=optimizer,
             batch_size=batch_size,
             epochs=epochs,
@@ -80,7 +82,7 @@ class MultitaskTrainer(BaseTrainer):
         }
         # Evaluate before training
         test_log = self.evaluate(
-            test_dataloader=self.test_dataloader,
+            test_dataloader=self.dev_dataloader,
             model=self.model,
             compute_cls_loss=self.cls_loss_fn,
             compute_reg_loss=self.reg_loss_fn,
@@ -96,6 +98,19 @@ class MultitaskTrainer(BaseTrainer):
         best_cls_log = {}
         best_reg_log = {}
         best_multitask_log = {}
+        
+        best_cls_checkpoint_path = os.path.join(
+            self.output_dir,
+            "best_cls.pth"
+        )
+        best_reg_checkpoint_path = os.path.join(
+            self.output_dir,
+            "best_reg.pth"
+        )
+        best_mtt_checkpoint_path = os.path.join(
+            self.output_dir,
+            "best_multitask.pth"
+        )
         
         # Training
         self.model.to(device)
@@ -119,7 +134,7 @@ class MultitaskTrainer(BaseTrainer):
             for k in self.history_training["train"]:
                 self.history_training["train"][k].append(train_log[k])
             test_log = self.evaluate(
-                    test_dataloader=self.test_dataloader,
+                    test_dataloader=self.dev_dataloader,
                     model=self.model,
                     compute_cls_loss=self.cls_loss_fn,
                     compute_reg_loss=self.reg_loss_fn,
@@ -146,11 +161,7 @@ class MultitaskTrainer(BaseTrainer):
                 max_f1 = test_log["Test F1"]
                 best_cls_log = test_log
 
-                checkpoint_path = os.path.join(
-                    self.output_dir,
-                    "best_cls.pth"
-                )
-                self.save_checkpoint(checkpoint_path=checkpoint_path)
+                self.save_checkpoint(checkpoint_path=best_cls_checkpoint_path)
                 
             # Save best checkpoint regression
             if test_log["Test MAE"] < min_mae:
@@ -165,12 +176,8 @@ class MultitaskTrainer(BaseTrainer):
                 # Update record regression metric 
                 min_mae = test_log["Test MAE"]
                 best_reg_log = test_log
-
-                checkpoint_path = os.path.join(
-                    self.output_dir,
-                    "best_reg.pth"
-                )
-                self.save_checkpoint(checkpoint_path=checkpoint_path)
+                
+                self.save_checkpoint(checkpoint_path=best_reg_checkpoint_path)
                 
             # Save best multitask checkpoint 
             if test_log["Test Loss"] > min_loss:
@@ -190,11 +197,7 @@ class MultitaskTrainer(BaseTrainer):
                 min_loss = test_log["Test Loss"]
                 best_multitask_log = test_log
                 
-                checkpoint_path = os.path.join(
-                    self.output_dir,
-                    "best_multitask.pth"
-                )
-                self.save_checkpoint(checkpoint_path=checkpoint_path)
+                self.save_checkpoint(checkpoint_path=best_mtt_checkpoint_path)
         #     if patient > 100:
         #         print(f"Early stopping at epoch {epoch + 1}!")
         #         break
@@ -208,18 +211,67 @@ class MultitaskTrainer(BaseTrainer):
             }  
             pbar.set_postfix(**records)
 
+        last_checkpoint_test_log = self.evaluate(
+            test_dataloader=self.test_dataloader,
+            model=self.model,
+            compute_cls_loss=self.cls_loss_fn,
+            compute_reg_loss=self.reg_loss_fn,
+            cls_metric=self.cls_metric,
+            reg_metric=self.reg_metric
+        )
+        
+        self.model.load_state_dict(torch.load(best_cls_checkpoint_path))
+        best_cls_checkpoint_test_log = self.evaluate(
+            test_dataloader=self.test_dataloader,
+            model=self.model,
+            compute_cls_loss=self.cls_loss_fn,
+            compute_reg_loss=self.reg_loss_fn,
+            cls_metric=self.cls_metric,
+            reg_metric=self.reg_metric
+        )
+        
+        self.model.load_state_dict(torch.load(best_reg_checkpoint_path))
+        best_reg_checkpoint_test_log = self.evaluate(
+            test_dataloader=self.test_dataloader,
+            model=self.model,
+            compute_cls_loss=self.cls_loss_fn,
+            compute_reg_loss=self.reg_loss_fn,
+            cls_metric=self.cls_metric,
+            reg_metric=self.reg_metric
+        )
+        
+        self.model.load_state_dict(torch.load(best_mtt_checkpoint_path))
+        best_mtt_checkpoint_test_log = self.evaluate(
+            test_dataloader=self.dev_dataloader,
+            model=self.model,
+            compute_cls_loss=self.cls_loss_fn,
+            compute_reg_loss=self.reg_loss_fn,
+            cls_metric=self.cls_metric,
+            reg_metric=self.reg_metric
+        )
+
         result_training = {
-            "best_metrics": {
+            "dev": {
                 "best_cls_log": best_cls_log,
                 "best_reg_log": best_reg_log,
                 "best_multitask_log": best_multitask_log
+            },
+            "test": {
+                "last_checkpoint": last_checkpoint_test_log,
+                "best_cls_checkpoint": best_cls_checkpoint_test_log,
+                "best_reg_checkpoint": best_reg_checkpoint_test_log,
+                "best_mtt_checkpoint": best_mtt_checkpoint_test_log
             }
+            
         }
         log_path = os.path.join(self.output_dir, "result_training.json") 
         save_json(
             data=result_training,
             file_path=log_path
         )
+        
+        print("Result training:")
+        pretty_print_json(result_training)
 
         history_path = os.path.join(self.output_dir, "history_training.json")
         save_json(
