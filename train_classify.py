@@ -65,6 +65,10 @@ if __name__ == "__main__":
         features=tensor_data["x_train"],
         cls_target=tensor_data["y_train_cls"]
     )
+    dev_dataset = ClassifyDataset(
+        features=tensor_data["x_dev"],
+        cls_target=tensor_data["y_dev_cls"],
+    )
     test_dataset = ClassifyDataset(
         features=tensor_data["x_test"],
         cls_target=tensor_data["y_test_cls"],
@@ -89,7 +93,7 @@ if __name__ == "__main__":
 
     print("Training info:\n")
     print("- Train data: {} samples".format(len(train_dataset)))
-    print("- Test data: {} samples".format(len(test_dataset)))
+    print("- Dev data: {} samples".format(len(dev_dataset)))
     print("- Batch size: {}".format(args.batch_size))
     print("- Number of epochs: {}".format(args.epochs))
     print("- Learning rate: {}".format(args.learning_rate))
@@ -97,7 +101,7 @@ if __name__ == "__main__":
     trainer = ClassifyTrainer(
         model=model,
         train_dataset=train_dataset,
-        eval_dataset=test_dataset,
+        eval_dataset=dev_dataset,
         cls_loss_fn=cls_loss_fn,
         cls_metric=cls_metric,
         optimizer=optimizer,
