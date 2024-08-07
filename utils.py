@@ -6,6 +6,66 @@ import numpy as np
 import pandas as pd
 
 
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+def recover_df(array):
+    array = array.reshape(-1, array.shape[-1])
+    df = pd.DataFrame(data=array, columns=["x", 'y', 'z', 'posture', 'breath_rate'])
+    return df
+
+
+
+def plot_dict_3d(data, color):
+    """
+    Plots a 3D scatter plot using a dictionary with keys 'x', 'y', and 'z'.
+
+    Parameters:
+    data (dict): Dictionary with keys 'x', 'y', and 'z' each containing a list of values.
+    """
+    # Set the modern theme
+    plt.style.use('seaborn')
+
+    color_map = {
+        0: "blue",
+        1: "green",
+        2: "red",
+        3: "purple",
+        4: "orange",
+        5: "teal",
+        6: "fuchsia",
+        7: "gray",
+        8: "olive",
+        9: "maroon",
+        10: "navy",
+        11: "lime"
+    }
+
+    color = [color_map[int(c)] for c in color]
+    # Create a figure and a 3D axis
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Extract the x, y, and z data
+    x = data['x']
+    y = data['y']
+    z = data['z']
+
+    # Plot the data
+    ax.scatter(x, y, z, c=color, marker='o')
+
+    # Add a title and labels
+    ax.set_title('3D Scatter Plot with Modern Theme')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    # Show the plot
+    plt.show()
+
+
+
+
 def set_seed(seed: int = 42) -> None:
     np.random.seed(seed)
     random.seed(seed)
@@ -40,7 +100,7 @@ def preprocess_data(
 ):
     len_data = len(df)
     num_data = len_data // len_point
-    new_df = df.drop(columns=[col_id, col_breath_rate])
+    new_df = df.drop(columns=[col_breath_rate])
     af_dataset = np.array([
         resolution(
             data=new_df.iloc[i*len_point : (i+1)*len_point].values,

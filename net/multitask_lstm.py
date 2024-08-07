@@ -20,7 +20,13 @@ class MultitaskLSTM(nn.Module):
         self.reg = nn.Linear(hidden_size_2, 1)
 
     def forward(self, x):
+
+        """
+        x: (512, 300, 3)
+        
+        """
         out, _ = self.lstm(x)
+        
         cls_out = out.contiguous()
         cls_out = cls_out.view(-1, out.shape[2])
         cls_out = self.cls(cls_out)
