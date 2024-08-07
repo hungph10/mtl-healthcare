@@ -143,9 +143,7 @@ class ClassifyTrainer(BaseTrainer):
             test_dataloader=self.test_dataloader,
             model=self.model,
             compute_cls_loss=self.cls_loss_fn,
-            compute_reg_loss=self.reg_loss_fn,
-            cls_metric=self.cls_metric,
-            reg_metric=self.reg_metric
+            cls_metric=self.cls_metric
         )
 
         self.model.load_state_dict(torch.load(best_cls_checkpoint_path))
@@ -153,9 +151,7 @@ class ClassifyTrainer(BaseTrainer):
             test_dataloader=self.test_dataloader,
             model=self.model,
             compute_cls_loss=self.cls_loss_fn,
-            compute_reg_loss=self.reg_loss_fn,
-            cls_metric=self.cls_metric,
-            reg_metric=self.reg_metric
+            cls_metric=self.cls_metric
         )
 
         result_training = {

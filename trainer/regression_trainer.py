@@ -142,9 +142,7 @@ class RegressionTrainer(BaseTrainer):
         last_checkpoint_test_log = self.evaluate(
             test_dataloader=self.test_dataloader,
             model=self.model,
-            compute_cls_loss=self.cls_loss_fn,
             compute_reg_loss=self.reg_loss_fn,
-            cls_metric=self.cls_metric,
             reg_metric=self.reg_metric
         )
 
@@ -152,9 +150,7 @@ class RegressionTrainer(BaseTrainer):
         best_reg_checkpoint_test_log = self.evaluate(
             test_dataloader=self.test_dataloader,
             model=self.model,
-            compute_cls_loss=self.cls_loss_fn,
             compute_reg_loss=self.reg_loss_fn,
-            cls_metric=self.cls_metric,
             reg_metric=self.reg_metric
         )
 
