@@ -242,7 +242,7 @@ class MultitaskTrainer(BaseTrainer):
         
         self.model.load_state_dict(torch.load(best_mtt_checkpoint_path))
         best_mtt_checkpoint_test_log = self.evaluate(
-            test_dataloader=self.dev_dataloader,
+            test_dataloader=self.test_dataloader,
             model=self.model,
             compute_cls_loss=self.cls_loss_fn,
             compute_reg_loss=self.reg_loss_fn,

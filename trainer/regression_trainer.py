@@ -100,11 +100,11 @@ class RegressionTrainer(BaseTrainer):
             for k in self.history_training["train"]:
                 self.history_training["train"][k].append(train_log[k])
             test_log = self.evaluate(
-                    test_dataloader=self.dev_dataloader,
-                    model=self.model,
-                    compute_reg_loss=self.reg_loss_fn,
+                test_dataloader=self.dev_dataloader,
+                model=self.model,
+                compute_reg_loss=self.reg_loss_fn,
                 reg_metric=self.reg_metric,
-                    train_log=train_log
+                train_log=train_log
             )
             for k in self.history_training["test"]:
                 self.history_training["test"][k].append(test_log[k])
@@ -173,9 +173,6 @@ class RegressionTrainer(BaseTrainer):
         pretty_print_json(result_training)
 
         history_path = os.path.join(self.output_dir, "history_training.json")
-        
-
-        best_checkpoint_reg = self.model.lo 
         save_json(
             data=self.history_training, 
             file_path=history_path
