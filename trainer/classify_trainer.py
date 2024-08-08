@@ -160,7 +160,7 @@ class ClassifyTrainer(BaseTrainer):
             },
             "test": {
                 "last_checkpoint": last_checkpoint_test_log,
-                "best_reg_checkpoint": best_cls_checkpoint_test_log
+                "best_cls_checkpoint": best_cls_checkpoint_test_log
             }
         }
         log_path = os.path.join(self.output_dir, "result_training.json") 
