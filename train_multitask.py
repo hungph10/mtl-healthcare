@@ -27,6 +27,9 @@ def parse_arguments():
     parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
+    
+    parser.add_argument('--scheduler', type=str, default='StepLR', help='Scheduler type')
+    
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
     parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
@@ -94,6 +97,15 @@ if __name__ == "__main__":
         params=model.parameters(),
         lr=args.learning_rate
     )
+    
+    if args.scheduler == 'StepLR':
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+    elif args.scheduler == 'ExponentialLR':
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer,  gamma=0.1)
+    elif args.scheduler == 'CosineAnnealingLR':
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+    else:
+        raise ValueError(f"Unsupported scheduler type: {args.scheduler}")
 
     print("Training info:\n")
     print("- Train data: {} samples".format(len(train_dataset)))
@@ -118,6 +130,7 @@ if __name__ == "__main__":
         log_steps=args.log_steps,
         log_wandb=args.log_wandb,
         project_name=args.project_name,
-        experiment_name=args.experiment_name
+        experiment_name=args.experiment_name,
+        scheduler=scheduler
     )
     trainer.train()

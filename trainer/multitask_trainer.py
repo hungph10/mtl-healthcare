@@ -33,7 +33,8 @@ class MultitaskTrainer(BaseTrainer):
         cls_loss_fn,
         reg_loss_fn,
         cls_metric,
-        reg_metric
+        reg_metric,
+        scheduler=None
     ):
         super().__init__(
             model=model,
@@ -53,6 +54,7 @@ class MultitaskTrainer(BaseTrainer):
         self.reg_loss_fn = reg_loss_fn
         self.cls_metric = cls_metric
         self.reg_metric = reg_metric
+        self.scheduler = scheduler
         
     def train(self):
         self.history_training = {
@@ -193,6 +195,11 @@ class MultitaskTrainer(BaseTrainer):
         #     if patient > 100:
         #         print(f"Early stopping at epoch {epoch + 1}!")
         #         break
+    
+            # Update the scheduler
+            if self.scheduler is not None:
+                self.scheduler.step()
+            
             records = {
                 "max_f1_test": round(max_f1, 2),
                 "min_mae_test": round(min_mae, 2),
