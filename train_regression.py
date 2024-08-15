@@ -39,8 +39,24 @@ def parse_arguments():
     return args
 
 
+
+def set_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 if __name__ == "__main__":
     args = parse_arguments()
+
+    # Set the random seed
+    if args.seed:
+        print("Initialize parameters with random seed: ", args.seed)
+        set_random_seed(seed=args.seed)
+    else:
+        print("Initialize parameters random without seed")
 
     # Load data
     data = np.load(args.data_path)
