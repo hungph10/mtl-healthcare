@@ -23,8 +23,10 @@ def parse_arguments():
     parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
-    parser.add_argument('--scheduler', type=str, default='StepLR', help='Scheduler type')
+    parser.add_argument('--scheduler', type=str, default='StepLR', help='Scheduler type (StepLR, ExponentialLR, CosineAnnealingLR)')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
+    parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for StepLR and ExponentialLR schedulers')
+    parser.add_argument('--step_size', type=int, default=10, help='Step size for StepLR scheduler')
     parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     

@@ -21,8 +21,11 @@ def parse_arguments():
     parser.add_argument('--n_hidden_1', type=int, help='Number of hidden units in the LSTM layer')
     parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
-    parser.add_argument('--scheduler', type=str, default='StepLR', help='Scheduler type')
+    
+    parser.add_argument('--scheduler', type=str, default='StepLR', help='Scheduler type (StepLR, ExponentialLR, CosineAnnealingLR)')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
+    parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for StepLR and ExponentialLR schedulers')
+    parser.add_argument('--step_size', type=int, default=10, help='Step size for StepLR scheduler')
     parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     
@@ -40,8 +43,24 @@ def parse_arguments():
     return args
 
 
+
+def set_random_seed(seed):
+    np.random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 if __name__ == "__main__":
     args = parse_arguments()
+
+    # Set the random seed
+    if args.seed:
+        print("Initialize parameters with random seed: ", args.seed)
+        set_random_seed(seed=args.seed)
+    else:
+        print("Initialize parameters random without seed")
 
     # Load data
     data = np.load(args.data_path)
@@ -50,6 +69,10 @@ if __name__ == "__main__":
     train_dataset = RegressionDataset(
         features=tensor_data["x_train"],
         reg_target=tensor_data["y_train_reg"]
+    )
+    dev_dataset = RegressionDataset(
+        features=tensor_data["x_dev"],
+        reg_target=tensor_data["y_dev_reg"]
     )
     test_dataset = RegressionDataset(
         features=tensor_data["x_test"],
@@ -71,7 +94,7 @@ if __name__ == "__main__":
         params=model.parameters(),
         lr=args.learning_rate
     )
-
+    
     if args.scheduler == 'StepLR':
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
     elif args.scheduler == 'ExponentialLR':
@@ -81,9 +104,10 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Unsupported scheduler type: {args.scheduler}")
 
+
     print("Training info:\n")
     print("- Train data: {} samples".format(len(train_dataset)))
-    print("- Test data: {} samples".format(len(test_dataset)))
+    print("- Dev data: {} samples".format(len(dev_dataset)))
     print("- Batch size: {}".format(args.batch_size))
     print("- Number of epochs: {}".format(args.epochs))
     print("- Learning rate: {}".format(args.learning_rate))
@@ -91,7 +115,8 @@ if __name__ == "__main__":
     trainer = RegressionTrainer(
         model=model,
         train_dataset=train_dataset,
-        eval_dataset=test_dataset,
+        eval_dataset=dev_dataset,
+        test_dataset=test_dataset,
         reg_loss_fn=reg_loss_fn,
         reg_metric=reg_metric,
         optimizer=optimizer,
@@ -102,7 +127,6 @@ if __name__ == "__main__":
         log_steps=args.log_steps,
         log_wandb=args.log_wandb,
         project_name=args.project_name,
-        experiment_name=args.experiment_name,
-        scheduler=scheduler
+        experiment_name=args.experiment_name
     )
     trainer.train()
