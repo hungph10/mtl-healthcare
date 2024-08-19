@@ -19,6 +19,7 @@ class BaseTrainer:
         eval_dataset,
         test_dataset,
         optimizer,
+        lr_scheduler,
         batch_size,
         epochs,
         output_dir,
@@ -46,6 +47,7 @@ class BaseTrainer:
         )
 
         self.optimizer = optimizer
+        self.lr_scheduler = lr_scheduler
         self.batch_size = batch_size
         self.epochs = epochs
         self.log_console = log_console

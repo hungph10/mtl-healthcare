@@ -11,7 +11,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class ClassifyTrainer(BaseTrainer):
-    
     def __init__(
         self,
         model,
@@ -19,6 +18,7 @@ class ClassifyTrainer(BaseTrainer):
         eval_dataset,
         test_dataset,
         optimizer,
+        lr_scheduler,
         batch_size,
         epochs,
         output_dir,
@@ -28,7 +28,7 @@ class ClassifyTrainer(BaseTrainer):
         project_name,
         experiment_name,
         cls_loss_fn,
-        cls_metric
+        cls_metric,
     ):
         super().__init__(
             model=model,
@@ -36,6 +36,7 @@ class ClassifyTrainer(BaseTrainer):
             eval_dataset=eval_dataset,
             test_dataset=test_dataset,
             optimizer=optimizer,
+            lr_scheduler=lr_scheduler,
             batch_size=batch_size,
             epochs=epochs,
             output_dir=output_dir,
@@ -83,7 +84,7 @@ class ClassifyTrainer(BaseTrainer):
         
         # Training
         self.model.to(device)
-        patient = 0
+        # patient = 0
         pbar = tqdm(
             range(self.epochs),
             ncols=180,
@@ -96,6 +97,7 @@ class ClassifyTrainer(BaseTrainer):
                 model=self.model, 
                 cls_loss_fn=self.cls_loss_fn,
                 optimizer=self.optimizer,
+                lr_scheduler=self.lr_scheduler,
                 cls_metric=self.cls_metric,
             )
             for k in self.history_training["train"]:
@@ -180,17 +182,18 @@ class ClassifyTrainer(BaseTrainer):
     def _inner_training_loop(
             train_dataloader,
             model,
-            cls_loss_fn,
             optimizer,
+            lr_scheduler,
+            cls_loss_fn,
             cls_metric,
         ):
         num_batches = len(train_dataloader)
-        
         total_loss_cls = 0
         total_acc = 0
         total_f1 = 0
         model.train()
         step = 0
+        lr_current = optimizer.param_groups[0]["lr"]
         for x, y_cls in train_dataloader:
             cls_output = model(x)
             y_cls = y_cls.view(-1)
@@ -199,24 +202,23 @@ class ClassifyTrainer(BaseTrainer):
             optimizer.zero_grad()
             cls_loss.backward()
             optimizer.step()
-            
-            
+            if lr_scheduler is not None:
+                lr_scheduler.step()
+                lr_current = lr_scheduler.get_last_lr()
             total_loss_cls += cls_loss.item()
             acc, f1 = cls_metric(cls_output, y_cls)
             total_acc += acc
             total_f1 += f1
             step += 1
         avg_loss_cls = total_loss_cls / num_batches
-        
         avg_acc = total_acc / num_batches
         avg_f1 = total_acc / num_batches
-        
         log_result = {
             "Train Loss Cls": avg_loss_cls,
             "Train Acc": avg_acc,
-            "Train F1": avg_f1
+            "Train F1": avg_f1,
+            "Learning rate": lr_current
         }
-        
         return log_result
 
     @staticmethod
@@ -229,7 +231,6 @@ class ClassifyTrainer(BaseTrainer):
     ):
         num_batches = len(test_dataloader)
         total_loss_cls = 0
-        
         total_acc = 0
         total_f1 = 0
         
@@ -244,20 +245,14 @@ class ClassifyTrainer(BaseTrainer):
                 acc, f1 = cls_metric(cls_output, y_cls)
                 total_acc += acc
                 total_f1 += f1
-                
-                
-
-        
         avg_loss_cls = total_loss_cls / num_batches
         avg_acc = total_acc / num_batches
         avg_f1 = total_acc / num_batches
-        
         log_result = {
             "Test Loss Cls": avg_loss_cls,
             "Test Acc": avg_acc,
             "Test F1": avg_f1
         }
-        
         for k, v in log_result.items():
             log_result[k] = round(v, 4)
         log_result.update(train_log)

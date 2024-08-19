@@ -1,0 +1,5 @@
+from .classify_trainer import ClassifyTrainer
+from .regression_trainer import RegressionTrainer
+from .multitask_trainer import MultitaskTrainer
+from .multitask_orthogonal_trainer import MultitaskOrthogonalTrainer
+from .multitask_orthogonal_tracenorm_trainer import MultitaskOrthogonalTracenormTrainer

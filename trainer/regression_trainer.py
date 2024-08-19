@@ -11,7 +11,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class RegressionTrainer(BaseTrainer):
-    
     def __init__(
         self,
         model,
@@ -19,6 +18,7 @@ class RegressionTrainer(BaseTrainer):
         eval_dataset,
         test_dataset,
         optimizer,
+        lr_scheduler,
         batch_size,
         epochs, 
         output_dir,
@@ -36,6 +36,7 @@ class RegressionTrainer(BaseTrainer):
             eval_dataset=eval_dataset,
             test_dataset=test_dataset,
             optimizer=optimizer,
+            lr_scheduler=lr_scheduler,
             batch_size=batch_size,
             epochs=epochs,
             output_dir=output_dir,
@@ -95,6 +96,7 @@ class RegressionTrainer(BaseTrainer):
                 model=self.model, 
                 reg_loss_fn=self.reg_loss_fn,
                 optimizer=self.optimizer,
+                lr_scheduler=self.lr_scheduler,
                 reg_metric=self.reg_metric
             )
             for k in self.history_training["train"]:
@@ -185,15 +187,15 @@ class RegressionTrainer(BaseTrainer):
             model,
             reg_loss_fn,
             optimizer,
+            lr_scheduler,
             reg_metric
         ):
         num_batches = len(train_dataloader)
-        
         total_loss_reg = 0
-        
         total_mae = 0
         model.train()
         step = 0
+        lr_current = optimizer.param_groups[0]["lr"]
         for x, y_reg in train_dataloader:
             reg_output = model(x)
             reg_loss = reg_loss_fn(reg_output, y_reg)
@@ -201,20 +203,19 @@ class RegressionTrainer(BaseTrainer):
             optimizer.zero_grad()
             reg_loss.backward()
             optimizer.step()
-            
-            
+            if lr_scheduler is not None:
+                lr_scheduler.step()
+                lr_current = lr_scheduler.get_last_lr()
             total_loss_reg += reg_loss.item()
             total_mae += reg_metric(reg_output, y_reg).item()
             step += 1
         avg_loss_reg = total_loss_reg / num_batches
-        
         avg_mae = total_mae / num_batches
-        
         log_result = {
             "Train Loss Reg": avg_loss_reg,
-            "Train MAE": avg_mae
+            "Train MAE": avg_mae,
+            "Learning rate": lr_current
         }
-        
         return log_result
 
     @staticmethod
@@ -237,18 +238,12 @@ class RegressionTrainer(BaseTrainer):
                 
                 total_loss_reg += reg_loss.item()
                 total_mae += reg_metric(reg_output, y_reg).item()
-                
-                
-
         avg_loss_reg = total_loss_reg / num_batches
         avg_mae = total_mae / num_batches
-        
         log_result = {
             "Test Loss Reg": avg_loss_reg,
             "Test MAE": avg_mae
         }
-        
-
         for k, v in log_result.items():
             log_result[k] = round(v, 4)
         log_result.update(train_log)

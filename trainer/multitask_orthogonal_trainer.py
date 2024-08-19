@@ -13,34 +13,36 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class MultitaskOrthogonalTrainer(MultitaskTrainer):
 
     def __init__(
-            self,
-            model,
-            train_dataset,
-            eval_dataset, 
-            test_dataset,
-            optimizer,
-            batch_size,
-            epochs,
-            output_dir,
-            log_console,
-            log_steps,
-            log_wandb,
-            project_name,
-            experiment_name, 
-            cls_loss_fn,
-            reg_loss_fn,
-            cls_metric, 
-            reg_metric, 
-            weight_regression,
-            weight_classify,
-            weight_grad
-        ):
+        self,
+        model,
+        train_dataset,
+        eval_dataset, 
+        test_dataset,
+        optimizer,
+        lr_scheduler,
+        batch_size,
+        epochs,
+        output_dir,
+        log_console,
+        log_steps,
+        log_wandb,
+        project_name,
+        experiment_name, 
+        cls_loss_fn,
+        reg_loss_fn,
+        cls_metric, 
+        reg_metric, 
+        weight_regression,
+        weight_classify,
+        weight_grad
+    ):
         super().__init__(
             model=model,
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             test_dataset=test_dataset,
             optimizer=optimizer,
+            lr_scheduler=lr_scheduler,
             batch_size=batch_size,
             epochs=epochs,
             output_dir=output_dir,
@@ -63,23 +65,23 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
             self,
             train_dataloader,
             model,
+            optimizer,
+            lr_scheduler,
             cls_loss_fn,
             reg_loss_fn,
-            optimizer,
             cls_metric,
             reg_metric
     ):
         num_batches = len(train_dataloader)
         total_loss = 0
-
         total_loss_reg = 0
         total_loss_cls = 0
-
         total_mae = 0
         total_acc = 0
         total_f1 = 0
         model.train()
         step = 0
+        lr_current = optimizer.param_groups[0]["lr"]
         for x, y_cls, y_reg in train_dataloader:
             reg_output, cls_output = model(x)
             reg_loss = reg_loss_fn(reg_output, y_reg)
@@ -88,24 +90,19 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
 
             grads_reg = torch.autograd.grad(reg_loss, model.lstm.parameters(), retain_graph=True)
             grads_cls = torch.autograd.grad(cls_loss, model.lstm.parameters(), retain_graph=True)
-
             grad_loss = 0
-            #
             for i in range(len(grads_reg)):
                 grad_loss += torch.norm(
                     (torch.mul(grads_cls[i], grads_reg[i]) - torch.ones_like(grads_reg[i]).to(device)), 2
                 )
-
             loss = self.w_reg * reg_loss + self.w_cls * cls_loss + self.w_grad * grad_loss
-
-            # loss = reg_loss + cls_loss + grad_loss
-
-
-            # loss = reg_loss + cls_loss
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            if lr_scheduler is not None:
+                lr_scheduler.step()
+                lr_current = lr_scheduler.get_last_lr()
 
             total_loss_reg += reg_loss.item()
             total_loss_cls += cls_loss.item()
@@ -119,18 +116,16 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
         avg_loss = total_loss / num_batches
         avg_loss_cls = total_loss_cls / num_batches
         avg_loss_reg = total_loss_reg / num_batches
-
         avg_mae = total_mae / num_batches
         avg_acc = total_acc / num_batches
         avg_f1 = total_acc / num_batches
-
         log_result = {
             "Train Loss": avg_loss,
             "Train Loss Reg": avg_loss_reg,
             "Train Loss Cls": avg_loss_cls,
             "Train MAE": avg_mae,
             "Train Acc": avg_acc,
-            "Train F1": avg_f1
+            "Train F1": avg_f1,
+            "Learning rate": lr_current
         }
-
         return log_result

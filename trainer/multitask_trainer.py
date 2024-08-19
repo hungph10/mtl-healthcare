@@ -23,6 +23,7 @@ class MultitaskTrainer(BaseTrainer):
         eval_dataset,
         test_dataset,
         optimizer,
+        lr_scheduler,
         batch_size,
         epochs,
         output_dir,
@@ -44,6 +45,7 @@ class MultitaskTrainer(BaseTrainer):
             eval_dataset=eval_dataset,
             test_dataset=test_dataset,
             optimizer=optimizer,
+            lr_scheduler=lr_scheduler,
             batch_size=batch_size,
             epochs=epochs,
             output_dir=output_dir,
@@ -125,9 +127,10 @@ class MultitaskTrainer(BaseTrainer):
             train_log = self._inner_training_loop(
                 train_dataloader=self.train_dataloader,
                 model=self.model, 
+                optimizer=self.optimizer,
+                lr_scheduler=self.lr_scheduler,
                 cls_loss_fn=self.cls_loss_fn,
                 reg_loss_fn=self.reg_loss_fn,
-                optimizer=self.optimizer,
                 cls_metric=self.cls_metric,
                 reg_metric=self.reg_metric
             )
@@ -296,23 +299,23 @@ class MultitaskTrainer(BaseTrainer):
             self,
             train_dataloader,
             model,
+            optimizer,
+            lr_scheduler,
             cls_loss_fn,
             reg_loss_fn,
-            optimizer,
             cls_metric,
             reg_metric
         ):
         num_batches = len(train_dataloader)
         total_loss = 0
-        
         total_loss_reg = 0
         total_loss_cls = 0
-        
         total_mae = 0
         total_acc = 0
         total_f1 = 0
         model.train()
         step = 0
+        lr_current = optimizer.param_groups[0]["lr"]
         for x, y_cls, y_reg in train_dataloader:
             reg_output, cls_output = model(x)
             reg_loss = reg_loss_fn(reg_output, y_reg)
@@ -323,7 +326,9 @@ class MultitaskTrainer(BaseTrainer):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            
+            if lr_scheduler is not None:
+                lr_scheduler.step()
+                lr_current = lr_scheduler.get_last_lr()
             
             total_loss_reg += reg_loss.item()
             total_loss_cls += cls_loss.item()
@@ -348,7 +353,8 @@ class MultitaskTrainer(BaseTrainer):
             "Train Loss Cls": avg_loss_cls,
             "Train MAE": avg_mae,
             "Train Acc": avg_acc,
-            "Train F1": avg_f1
+            "Train F1": avg_f1,
+            "Learning rate": lr_current
         }
         
         return log_result

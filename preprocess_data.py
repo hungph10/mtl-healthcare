@@ -4,8 +4,11 @@ from utils import preprocess_data, resolution, recover_df
 from augment import *
 
 
+inp_path = "data/split_val_from_raw_1508/split_val_from_train.npz"
+data = np.load(inp_path)
 
-data = np.load("data/update-0208/train_dev_test_split.npz")
+out_path = "data/split_val_from_raw_1508/train_val_test-1508.npz"
+# data = np.load("data/update-0208/train_dev_test_split.npz")
 
 # train_path = "data/cls_regr_16_person/train.csv"
 # test_path = "data/cls_regr_16_person/test.csv"
@@ -58,4 +61,4 @@ data = {
     "y_test": Y_test
 }
 
-np.savez("data/update-0208/processed_and_augmented.npz", **data)
+np.savez(out_path, **data)

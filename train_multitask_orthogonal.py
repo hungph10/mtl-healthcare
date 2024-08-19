@@ -133,6 +133,5 @@ if __name__ == "__main__":
         weight_regression=args.w_regression,
         weight_classify=args.w_classify,
         weight_grad=args.w_grad
-
     )
     trainer.train()

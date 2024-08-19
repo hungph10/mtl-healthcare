@@ -135,6 +135,5 @@ if __name__ == "__main__":
         weight_classify=args.w_classify,
         weight_grad=args.w_grad,
         weight_trace_norm=args.w_trace_norm
-
     )
     trainer.train()

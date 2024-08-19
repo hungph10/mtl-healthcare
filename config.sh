@@ -1,0 +1,13 @@
+# SEED=42
+# TASK=MultitaskOrthogonal
+# BATCH_SIZE=512
+# EPOCHS=600
+# DROPOUT=0.25
+# INPUT_DIM=3
+# N_HIDDEN1=128
+# N_HIDDEN2=64
+# N_CLASSES=12
+# LEARNING_RATE=0.001
+# LR_SCHEDULER=CosineAnnealingWarmRestarts
+DATA_PATH=data/update-0208-mix-and-split/processed_and_augmented.npz
+# OUTPUT_DIR=models/mtt_orthogonal_1908

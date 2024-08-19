@@ -22,6 +22,34 @@ def parse_arguments():
     parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
     parser.add_argument('--p_dropout', type=float, help='Dropout probability')
     parser.add_argument('--learning_rate', type=float, help='Learning rate')
+    parser.add_argument(
+        '--lr_scheduler',
+        type=str,
+        default=None,
+        help='Default is constant learning rate, support these learning rate scheduler: \
+StepLR, ExponentialLR, CosineAnnealingLR, CosineAnnealingWarmRestarts'
+    )
+    parser.add_argument(
+        '--gamma', type=float, default=0.1,
+        help='Gamma value for LR scheduler (StepLR and ExponentialLR)'
+    )
+    parser.add_argument(
+        '--step_size', type=int, default=100,
+        help='Step size reduce learning rate for StepLR scheduler'
+    )
+    parser.add_argument(
+        '--T_max', type=int, default=200,
+        help='Max iterations for CosineAnnealingLR'
+    )
+    parser.add_argument(
+        '--T_0', type=int, default=100,
+        help='Number of iterations until the first restart for CosineAnnealingWarmRestarts'
+    )
+    parser.add_argument(
+        '--T_mul', type=int, default=2,
+        help='A factor by which T_i increases after a restart for CosineAnnealingWarmRestarts'
+    )
+
     parser.add_argument('--seed', type=int, help='Set the random seed')
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     
@@ -90,6 +118,38 @@ if __name__ == "__main__":
         params=model.parameters(),
         lr=args.learning_rate
     )
+
+    if args.lr_scheduler is None:
+        scheduler = None
+    elif args.lr_scheduler == 'StepLR':
+        scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer,
+            step_size=args.step_size,
+            gamma=args.gamma
+        )
+    elif args.lr_scheduler == 'ExponentialLR':
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(
+            optimizer,
+            gamma=args.gamma
+        )
+    elif args.lr_scheduler == 'CosineAnnealingLR':
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=args.T_max,
+            eta_min=1e-7,
+            last_epoch=-1
+        )
+    elif args.lr_scheduler == 'CosineAnnealingWarmRestarts':
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+            optimizer,
+            T_0=args.T_0,
+            T_mult=args.T_mul,
+            eta_min=1e-7,
+            last_epoch=-1
+        )
+    else:
+        raise ValueError(f"Unsupported scheduler type: {args.lr_scheduler}")
+
 
     print("Training info:\n")
     print("- Train data: {} samples".format(len(train_dataset)))
