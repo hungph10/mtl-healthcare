@@ -59,7 +59,7 @@ StepLR, ExponentialLR, CosineAnnealingLR, CosineAnnealingWarmRestarts'
     # Weight for aggregated loss
     parser.add_argument('--w_regression', type=float, default=1, help='Weight regression loss')
     parser.add_argument('--w_classify', type=float, default=1, help='Weight classify loss')
-    parser.add_argument('--w_grad', type=float, default=1, help='Weight gradient loss')
+    parser.add_argument('--w_grad', type=float, default=1, help='Weight orthogonal gradient loss')
     parser.add_argument('--w_trace_norm', type=float, default=1, help='Weight tracenorm loss')
 
     # Location of data and checkpoint 
