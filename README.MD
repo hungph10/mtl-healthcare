@@ -66,4 +66,9 @@ access *https://wandb.ai/authorize* (login via Google account):
     (venv) bash train.sh
     ```
 
+4. **Hyper parameters**
 
+    Open terminal and run this command to read parameter description:
+    ```
+    (venv) python train.py -h
+    ```
