@@ -303,7 +303,7 @@ def get_trainer(args):
     if args.task == "Classify":
         return get_classify_trainer(args)
     elif args.task == "Regression":
-        return get_classify_trainer(args)
+        return get_regression_trainer(args)
     if args.task in [
         "Multitask", "MultitaskOrthogonal", "MultitaskOrthogonalTracenorm"
     ]:
