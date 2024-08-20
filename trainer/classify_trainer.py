@@ -219,7 +219,6 @@ class ClassifyTrainer(BaseTrainer):
             "Train F1": avg_f1,
             "Learning rate": lr_current
         }
-        print(log_result)
         return log_result
 
     @staticmethod
