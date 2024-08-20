@@ -118,7 +118,7 @@ class MultitaskOrthogonalTracenormTrainer(MultitaskOrthogonalTrainer):
             optimizer.step()
             if lr_scheduler is not None:
                 lr_scheduler.step()
-                lr_current = lr_scheduler.get_last_lr()
+                lr_current = lr_scheduler.get_last_lr()[0]
             total_loss_reg += reg_loss.item()
             total_loss_cls += cls_loss.item()
             total_loss += loss.item()

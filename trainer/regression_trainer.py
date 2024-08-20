@@ -205,7 +205,7 @@ class RegressionTrainer(BaseTrainer):
             optimizer.step()
             if lr_scheduler is not None:
                 lr_scheduler.step()
-                lr_current = lr_scheduler.get_last_lr()
+                lr_current = lr_scheduler.get_last_lr()[0]
             total_loss_reg += reg_loss.item()
             total_mae += reg_metric(reg_output, y_reg).item()
             step += 1

@@ -204,7 +204,7 @@ class ClassifyTrainer(BaseTrainer):
             optimizer.step()
             if lr_scheduler is not None:
                 lr_scheduler.step()
-                lr_current = lr_scheduler.get_last_lr()
+                lr_current = lr_scheduler.get_last_lr()[0]
             total_loss_cls += cls_loss.item()
             acc, f1 = cls_metric(cls_output, y_cls)
             total_acc += acc
@@ -219,6 +219,7 @@ class ClassifyTrainer(BaseTrainer):
             "Train F1": avg_f1,
             "Learning rate": lr_current
         }
+        print(log_result)
         return log_result
 
     @staticmethod
