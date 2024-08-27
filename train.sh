@@ -23,26 +23,32 @@
 #     # --experiment_name "MTT-Orthogonal-Tracenorm"\
 #     # --log_console 
 
-
-DATA_PATH=data/update-0208-mix-and-split/mix_processed_and_augmented.npz
-python train.py \
-    --task Regression\
-    --batch_size 512 \
-    --epochs 25 \
-    --p_dropout 0.25 \
-    --input_dim 3 \
-    --n_hidden_1 128 \
-    --n_hidden_2 64 \
-    --n_classes 12 \
-    --learning_rate 0.001 \
-    --lr_scheduler CosineAnnealingWarmRestarts \
-    --w_regression 0.1 \
-    --w_classify 0.5 \
-    --w_grad 0.5 \
-    --w_trace_norm 0.001 \
-    --data_path $DATA_PATH \
-    --output_dir models/regression-1908 \
-    --log_step 5 \
+###
+# DATA_PATH=data/update-0208-mix-and-split/mix_processed_and_augmented.npz
+# python train.py \
+#     --task Regression\
+#     --batch_size 512 \
+#     --epochs 25 \
+#     --p_dropout 0.25 \
+#     --input_dim 3 \
+#     --n_hidden_1 128 \
+#     --n_hidden_2 64 \
+#     --n_classes 12 \
+#     --learning_rate 0.001 \
+#     --lr_scheduler CosineAnnealingWarmRestarts \
+#     --w_regression 0.1 \
+#     --w_classify 0.5 \
+#     --w_grad 0.5 \
+#     --w_trace_norm 0.001 \
+#     --data_path $DATA_PATH \
+#     --output_dir models/regression-1908 \
+#     --log_step 5 \
     # --log_wandb \
     # --project_name "Experiments MTT" \
     # --experiment_name "Regression-1908"\
+
+
+### Experiment ML algorithms
+python lazy_ml_classify.py \
+    --data_path data/split_val_from_raw_1508/train_val_test-1508.npz \
+    --output_report_csv data/split_val_from_raw_1508/report.csv
