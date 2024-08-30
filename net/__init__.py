@@ -6,6 +6,10 @@ from .classify_lstm import ClassifyLSTM
 from .regression_lstm import RegressionLSTM
 from .multitask_lstm import MultitaskLSTM
 from .kan_multitask_lstm import KANMultitaskLSTM
+from .cnn_attention.multitask import MultitaskCNNAttention1D
+from .cnn_attention.classify import ClassifyCNNAttention1D
+from .cnn_attention.regression import RegressionCNNAttention1D
+
 
 cls_loss_fn = nn.CrossEntropyLoss()
 reg_loss_fn = nn.MSELoss()

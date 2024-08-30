@@ -25,7 +25,7 @@ class MultiheadSelfAttention(nn.Module):
         return torch.matmul(attention, V)
 
 
-class MultitaskCNNAttention1D(nn.Module):
+class ClassifyCNNAttention1D(nn.Module):
     def __init__(
         self,
         input_dim,
@@ -37,7 +37,7 @@ class MultitaskCNNAttention1D(nn.Module):
         dropout,
         num_classes
     ):
-        super(MultitaskCNNAttention1D, self).__init__()
+        super(ClassifyCNNAttention1D, self).__init__()
         
         # Padding for keep original sequence length
         padding = int((kernel_size - 1) / 2)
@@ -69,7 +69,6 @@ class MultitaskCNNAttention1D(nn.Module):
         )
         # Tasks layer
         self.cls = nn.Linear(hidden_size_conv3, num_classes)
-        self.reg = nn.Linear(hidden_size_conv3, 1)
 
     def forward(self, x):
         # Input shape: (batch_size, sequence_length, input_dim)
@@ -83,6 +82,4 @@ class MultitaskCNNAttention1D(nn.Module):
         
         cls_output = self.cls(norm_mlp_output)
         cls_output = cls_output.view(-1, cls_output.shape[2])
-        average_pooling = torch.mean(norm_mlp_output, dim=1)
-        reg_output = self.reg(average_pooling).flatten()
-        return reg_output, cls_output
+        return cls_output

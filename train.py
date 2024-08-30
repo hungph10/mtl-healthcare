@@ -22,8 +22,16 @@ Multitask, MultitaskOrthogonal, MultitaskOrthogonalTracenorm'
 
     # Network dimensions
     parser.add_argument('--input_dim', type=int, help='Input dimension')
-    parser.add_argument('--n_hidden_1', type=int, help='Number of hidden units in the LSTM layer')
-    parser.add_argument('--n_hidden_2', type=int, help='Number of hidden units in the LSTM layer')
+    # LSTM hyper parameters
+    parser.add_argument('--hidden_size_lstm1', type=int, help='Number of hidden units in the first LSTM layer')
+    parser.add_argument('--hidden_size_lstm2', type=int, help='Number of hidden units in the second LSTM layer')
+    # CNN-Attention hyper parameters
+    parser.add_argument('--hidden_size_conv1', type=int, help='Number of hidden units in the first Conv1D')
+    parser.add_argument('--hidden_size_conv2', type=int, help='Number of hidden units in the second Conv1D')
+    parser.add_argument('--hidden_size_conv3', type=int, help='Number of hidden units in the third Conv1D')
+    parser.add_argument('--kernel_size', type=int, help='Kernel size of Conv1D')
+    parser.add_argument('--num_heads', type=int, help='Number of attention heads ')
+    
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     
     # Learning rate scheduler

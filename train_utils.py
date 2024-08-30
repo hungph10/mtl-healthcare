@@ -20,6 +20,9 @@ from net import (
     RegressionLSTM,
     ClassifyLSTM,
     MultitaskLSTM,
+    ClassifyCNNAttention1D,
+    RegressionCNNAttention1D,
+    MultitaskCNNAttention1D,
     reg_loss_fn,
     reg_metric,
     cls_metric,
@@ -75,7 +78,8 @@ def get_lr_scheduler(args, optimizer):
             last_epoch=-1
         )
     else:
-        raise ValueError(f"Unsupported scheduler type: {args.lr_scheduler}")
+        support_lr_schedulers = ['StepLR', 'ExponentialLR', 'CosineAnnealingLR', 'CosineAnnealingWarmRestarts']
+        raise ValueError(f"Unsupported scheduler type: {args.lr_scheduler}!\nOnly support: {support_lr_schedulers}")
     return scheduler
 
 
@@ -133,13 +137,29 @@ def get_dataset(npz_path, task):
 
 
 def get_classify_trainer(args):
-    model = ClassifyLSTM(
-        input_size=args.input_dim,
-        hidden_size_1=args.n_hidden_1,
-        hidden_size_2=args.n_hidden_2,
-        output_size=args.n_classes,
-        dropout=args.p_dropout
-    )
+    if args.network == "LSTM":
+        model = ClassifyLSTM(
+            input_size=args.input_dim,
+            hidden_size_1=args.hidden_size_lstm1,
+            hidden_size_2=args.hidden_size_lstm2,
+            output_size=args.n_classes,
+            dropout=args.p_dropout
+        )
+    elif args.network == "CNN-Attention":
+        model = ClassifyCNNAttention1D(
+            input_dim=args.input_dim,
+            hidden_size_conv1=args.hidden_size_conv1,
+            hidden_size_conv2=args.hidden_size_conv2,
+            hidden_size_conv3=args.hidden_size_conv3,
+            kernel_size=args.kernel_size,
+            num_heads=args.num_heads,
+            dropout=args.p_dropout,
+            num_classes=args.n_classes
+        )
+    else:
+        support_networks = ["LSTM", "CNN-Attention"]
+        raise ValueError(f"Unsupported network: {args.network}!\nOnly support: {support_networks}")
+    
     model = model.to(device)
     optimizer = get_optimizer(args=args, model=model)
     lr_scheduler = get_lr_scheduler(args=args, optimizer=optimizer)
@@ -169,12 +189,27 @@ def get_classify_trainer(args):
 
 
 def get_regression_trainer(args):
-    model = RegressionLSTM(
-        input_size=args.input_dim,
-        hidden_size_1=args.n_hidden_1,
-        hidden_size_2=args.n_hidden_2,
-        dropout=args.p_dropout
-    )
+    if args.network == "LSTM":
+        model = RegressionLSTM(
+            input_size=args.input_dim,
+            hidden_size_1=args.hidden_size_lstm1,
+            hidden_size_2=args.hidden_size_lstm2,
+            dropout=args.p_dropout
+        )
+    elif args.network == "CNN-Attention":
+        model = RegressionCNNAttention1D(
+            input_dim=args.input_dim,
+            hidden_size_conv1=args.hidden_size_conv1,
+            hidden_size_conv2=args.hidden_size_conv2,
+            hidden_size_conv3=args.hidden_size_conv3,
+            kernel_size=args.kernel_size,
+            num_heads=args.num_heads,
+            dropout=args.p_dropout
+        )
+    else:
+        support_networks = ["LSTM", "CNN-Attention"]
+        raise ValueError(f"Unsupported network: {args.network}!\nOnly support: {support_networks}")
+    
     model = model.to(device)
     optimizer = get_optimizer(args=args, model=model)
     lr_scheduler = get_lr_scheduler(args=args, optimizer=optimizer)
@@ -204,13 +239,29 @@ def get_regression_trainer(args):
 
 
 def get_multitask_trainer(args):
-    model = MultitaskLSTM(
-        input_size=args.input_dim,
-        hidden_size_1=args.n_hidden_1,
-        hidden_size_2=args.n_hidden_2,
-        output_size=args.n_classes,
-        dropout=args.p_dropout
-    )
+    if args.network == "LSTM":
+        model = MultitaskLSTM(
+            input_size=args.input_dim,
+            hidden_size_1=args.hidden_size_lstm1,
+            hidden_size_2=args.hidden_size_lstm2,
+            output_size=args.n_classes,
+            dropout=args.p_dropout
+        )
+    elif args.network == "CNN-Attention":
+        model = MultitaskCNNAttention1D(
+            input_dim=args.input_dim,
+            hidden_size_conv1=args.hidden_size_conv1,
+            hidden_size_conv2=args.hidden_size_conv2,
+            hidden_size_conv3=args.hidden_size_conv3,
+            kernel_size=args.kernel_size,
+            num_heads=args.num_heads,
+            dropout=args.p_dropout,
+            num_classes=args.n_classes
+        )
+    else:
+        support_networks = ["LSTM", "CNN-Attention"]
+        raise ValueError(f"Unsupported network: {args.network}!\nOnly support: {support_networks}")
+    
     model = model.to(device)
     optimizer = get_optimizer(args=args, model=model)
     lr_scheduler = get_lr_scheduler(args=args, optimizer=optimizer)
@@ -309,5 +360,5 @@ def get_trainer(args):
     ]:
         return get_multitask_trainer(args)
     else:
-        raise ValueError(f"Unsupported scheduler type: {args.lr_scheduler}, task should be one of \
+        raise ValueError(f"Unsupported task: {args.task}, task should be one of \
 these tasks: Classify, Regression, Multitask, MultitaskOrthogonal, MultitaskOrthogonalTracenorm")
