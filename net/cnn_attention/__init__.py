@@ -1,0 +1,3 @@
+from .classify import ClassifyCNNAttention1D
+from .regression import RegressionCNNAttention1D
+from .multitask import MultitaskCNNAttention1D

@@ -2,13 +2,12 @@ import torch
 from torch import nn
 from sklearn.metrics import accuracy_score, f1_score
 
-from .classify_lstm import ClassifyLSTM
-from .regression_lstm import RegressionLSTM
-from .multitask_lstm import MultitaskLSTM
+from .lstm import ClassifyLSTM, RegressionLSTM, MultitaskLSTM
+from .cnn_attention import ClassifyCNNAttention1D, RegressionCNNAttention1D, MultitaskCNNAttention1D
+
+
+
 from .kan_multitask_lstm import KANMultitaskLSTM
-from .cnn_attention.multitask import MultitaskCNNAttention1D
-from .cnn_attention.classify import ClassifyCNNAttention1D
-from .cnn_attention.regression import RegressionCNNAttention1D
 
 
 cls_loss_fn = nn.CrossEntropyLoss()
