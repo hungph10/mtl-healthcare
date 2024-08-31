@@ -22,6 +22,7 @@ Multitask, MultitaskOrthogonal, MultitaskOrthogonalTracenorm'
 
     # Network dimensions
     parser.add_argument('--input_dim', type=int, help='Input dimension')
+    parser.add_argument("--network", type=str, help='Network architecture')
     # LSTM hyper parameters
     parser.add_argument('--hidden_size_lstm1', type=int, help='Number of hidden units in the first LSTM layer')
     parser.add_argument('--hidden_size_lstm2', type=int, help='Number of hidden units in the second LSTM layer')
