@@ -22,16 +22,16 @@ Multitask, MultitaskOrthogonal, MultitaskOrthogonalTracenorm'
 
     # Network dimensions
     parser.add_argument('--input_dim', type=int, help='Input dimension')
-    parser.add_argument("--network", type=str, help='Network architecture')
+    parser.add_argument("--network", type=str, help='Network architecture, support only: LSTM, CNN-Attention')
     # LSTM hyper parameters
-    parser.add_argument('--hidden_size_lstm1', type=int, help='Number of hidden units in the first LSTM layer')
-    parser.add_argument('--hidden_size_lstm2', type=int, help='Number of hidden units in the second LSTM layer')
+    parser.add_argument('--hidden_size_lstm1', type=int, help='Number of hidden units in the first LSTM layer (LSTM architecture)')
+    parser.add_argument('--hidden_size_lstm2', type=int, help='Number of hidden units in the second LSTM layer (LSTM architecture)')
     # CNN-Attention hyper parameters
-    parser.add_argument('--hidden_size_conv1', type=int, help='Number of hidden units in the first Conv1D')
-    parser.add_argument('--hidden_size_conv2', type=int, help='Number of hidden units in the second Conv1D')
-    parser.add_argument('--hidden_size_conv3', type=int, help='Number of hidden units in the third Conv1D')
-    parser.add_argument('--kernel_size', type=int, help='Kernel size of Conv1D')
-    parser.add_argument('--num_heads', type=int, help='Number of attention heads ')
+    parser.add_argument('--hidden_size_conv1', type=int, help='Number of hidden units in the first Conv1D (CNN-Attention architecture)')
+    parser.add_argument('--hidden_size_conv2', type=int, help='Number of hidden units in the second Conv1D (CNN-Attention architecture)')
+    parser.add_argument('--hidden_size_conv3', type=int, help='Number of hidden units in the third Conv1D (CNN-Attention architecture)')
+    parser.add_argument('--kernel_size', type=int, help='Kernel size of Conv1D (CNN-Attention architecture)')
+    parser.add_argument('--num_heads', type=int, help='Number of attention heads (CNN-Attention architecture)')
     
     parser.add_argument('--n_classes', type=int, help='Number of output classes')
     
@@ -75,12 +75,12 @@ StepLR, ExponentialLR, CosineAnnealingLR, CosineAnnealingWarmRestarts'
     parser.add_argument('--data_path', type=str, help='Path to the data training')
     parser.add_argument('--output_dir', type=str, help='Output directory for saving models')
 
-    # WandB / Console logging
+    # Wandb / Console logging
     parser.add_argument('--log_steps', type=int, help='Logging steps during training')
     parser.add_argument('--log_console', action='store_true', help='Enable console logging')
-    parser.add_argument('--log_wandb', action='store_true', help='Enable WandB logging')
-    parser.add_argument('--project_name', type=str, default='Project demo', help='WandB project name')
-    parser.add_argument('--experiment_name', type=str, default='Experiment demo', help='WandB experiment name')
+    parser.add_argument('--log_wandb', action='store_true', help='Enable Wandb logging')
+    parser.add_argument('--project_name', type=str, default='Project demo', help='Wandb project name')
+    parser.add_argument('--experiment_name', type=str, default='Experiment demo', help='Wandb experiment name')
 
     args = parser.parse_args()
     return args
