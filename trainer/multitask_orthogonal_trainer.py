@@ -88,13 +88,26 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
             y_cls = y_cls.view(-1)
             cls_loss = cls_loss_fn(cls_output, y_cls)
 
-            grads_reg = torch.autograd.grad(reg_loss, model.lstm.parameters(), retain_graph=True)
-            grads_cls = torch.autograd.grad(cls_loss, model.lstm.parameters(), retain_graph=True)
+            grads_reg = torch.autograd.grad(
+                outputs=reg_loss,
+                inputs=model.share_parameters(),
+                retain_graph=True,
+                allow_unused=True
+            )
+            grads_cls = torch.autograd.grad(
+                outputs=cls_loss,
+                inputs=model.share_parameters(),
+                retain_graph=True,
+                allow_unused=True
+            )
             grad_loss = 0
             for i in range(len(grads_reg)):
-                grad_loss += torch.norm(
-                    (torch.mul(grads_cls[i], grads_reg[i]) - torch.ones_like(grads_reg[i]).to(device)), 2
-                )
+                grad_cls = grads_cls[i]
+                grad_reg = grads_reg[i]
+                if grad_cls is not None and grad_reg is not None:
+                    grad_loss += torch.norm(
+                        (torch.mul(grad_cls, grad_reg) - torch.ones_like(grad_reg).to(device)), 2
+                    )
             loss = self.w_reg * reg_loss + self.w_cls * cls_loss + self.w_grad * grad_loss
 
             optimizer.zero_grad()

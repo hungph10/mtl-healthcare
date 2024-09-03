@@ -86,3 +86,13 @@ class MultitaskCNNAttention1D(nn.Module):
         average_pooling = torch.mean(norm_mlp_output, dim=1)
         reg_output = self.reg(average_pooling).flatten()
         return reg_output, cls_output
+    
+    def share_parameters(self):
+        for param in self.conv.parameters():
+            yield param
+        for param in self.attention.parameters():
+            yield param
+        for param in self.layer_norm.parameters():
+            yield param
+        for param in self.mlp.parameters():
+            yield param

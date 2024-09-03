@@ -36,3 +36,6 @@ class MultitaskLSTM(nn.Module):
         reg_out = self.reg(out[:, -1, :]).flatten()
 
         return reg_out, cls_out
+
+    def share_parameters(self):
+        return self.lstm.parameters()
