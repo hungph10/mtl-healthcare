@@ -42,7 +42,7 @@ access *https://wandb.ai/authorize* (login via Google account):
             --output_report_csv <Path to csv output file>
     
     #### Neural network experiments
-    - Usage
+    - Hyper parameters
         ```
         usage: train.py [-h] 
 
@@ -124,8 +124,32 @@ access *https://wandb.ai/authorize* (login via Google account):
             --w_classify 0.5 \
             --w_grad 0.5 \
             --w_trace_norm 0.001 \
-            --data_path <Data dir>/train_val_test-1508.npz \>
+            --data_path <Data dir>/train_val_test-1508.npz \
             --output_dir models/LSTM-multitask-orthogonal-tracenorm
+
+        # Example training multitask orthogonal using CNN-Attention
+        python train.py \
+            --task MultitaskOrthogonalTracenorm\
+            --network CNN-Attention \
+            --batch_size 512 \
+            --epochs 600 \
+            --p_dropout 0.25 \
+            --input_dim 3 \
+            --hidden_size_conv1 64 \
+            --hidden_size_conv2 128 \
+            --hidden_size_conv3 256 \
+            --kernel_size 3 \
+            --num_heads 16 \
+            --n_classes 12 \
+            --learning_rate 0.001 \
+            --lr_scheduler CosineAnnealingWarmRestarts \
+            --w_regression 0.1 \
+            --w_classify 0.5 \
+            --w_grad 0.5 \
+            --w_trace_norm 0.001 \
+            --data_path  <Data dir>/train_val_test-1508.npz  \
+            --output_dir models/CNN-Attention-multitask-orthogonal-tracenorm
+
             
         ```
     - If logging to console:
