@@ -7,7 +7,7 @@ for seed in "${SEEDS[@]}"; do
             for p_dropout in "${DROPOUT[@]}"; do
                 for lr in "${LEARNING_RATE[@]}"; do
                     for lr_scheduler in "${LR_SCHEDULER[@]}"; do
-                        for network in "${NETWORK[@]}"; do
+                        for network in "${NETWORKS[@]}"; do
                             if ["$network" == "LSTM"]
                             then
                                 for hidden_size_lstm1 in "${HIDDEN_SIZE_LSTM1[@]}"; do

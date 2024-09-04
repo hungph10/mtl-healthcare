@@ -16,6 +16,8 @@ W_CLASSIFY=(0.5)
 W_GRAD=(0.5)
 W_TRACENORM=(0.001)
 
+# Network supported
+NETWORKS=("LSTM", "CNN-Attention")
 
 # Hyper parameters for LSTM architecture
 HIDDEN_SIZE_LSTM1=(128)
