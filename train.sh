@@ -23,7 +23,7 @@ for seed in "${SEEDS[@]}"; do
                                                     --batch_size $batch_size \
                                                     --epochs $epochs \
                                                     --p_dropout $p_dropout \
-                                                    --network LSTM \
+                                                    --network $network \
                                                     --input_dim 3 \
                                                     --hidden_size_lstm1 $hidden_size_lstm1 \
                                                     --hidden_size_lstm2 $hidden_size_lstm2 \
@@ -48,7 +48,7 @@ for seed in "${SEEDS[@]}"; do
                                                             --batch_size $batch_size \
                                                             --epochs $epochs \
                                                             --p_dropout $p_dropout \
-                                                            --network LSTM \
+                                                            --network $network \
                                                             --input_dim 3 \
                                                             --hidden_size_lstm1 $hidden_size_lstm1 \
                                                             --hidden_size_lstm2 $hidden_size_lstm2 \
@@ -78,7 +78,7 @@ for seed in "${SEEDS[@]}"; do
                                                                 --batch_size $batch_size \
                                                                 --epochs $epochs \
                                                                 --p_dropout $p_dropout \
-                                                                --network LSTM \
+                                                                --network $network \
                                                                 --input_dim 3 \
                                                                 --hidden_size_lstm1 $hidden_size_lstm1 \
                                                                 --hidden_size_lstm2 $hidden_size_lstm2 \
@@ -111,7 +111,7 @@ for seed in "${SEEDS[@]}"; do
                                                                 --batch_size $batch_size \
                                                                 --epochs $epochs \
                                                                 --p_dropout $p_dropout \
-                                                                --network LSTM \
+                                                                --network $network \
                                                                 --input_dim 3 \
                                                                 --hidden_size_lstm1 $hidden_size_lstm1 \
                                                                 --hidden_size_lstm2 $hidden_size_lstm2 \
@@ -154,7 +154,7 @@ for seed in "${SEEDS[@]}"; do
                                                                 --batch_size $batch_size \
                                                                 --epochs $epochs \
                                                                 --p_dropout $p_dropout \
-                                                                --network LSTM \
+                                                                --network $network \
                                                                 --input_dim 3 \
                                                                 --hidden_size_conv1 $hidden_size_conv1 \
                                                                 --hidden_size_conv2 $hidden_size_conv2 \
@@ -182,7 +182,7 @@ for seed in "${SEEDS[@]}"; do
                                                                         --batch_size $batch_size \
                                                                         --epochs $epochs \
                                                                         --p_dropout $p_dropout \
-                                                                        --network LSTM \
+                                                                        --network $network \
                                                                         --input_dim 3 \
                                                                         --hidden_size_conv1 $hidden_size_conv1 \
                                                                         --hidden_size_conv2 $hidden_size_conv2 \
@@ -215,7 +215,7 @@ for seed in "${SEEDS[@]}"; do
                                                                             --batch_size $batch_size \
                                                                             --epochs $epochs \
                                                                             --p_dropout $p_dropout \
-                                                                            --network LSTM \
+                                                                            --network $network \
                                                                             --input_dim 3 \
                                                                             --hidden_size_conv1 $hidden_size_conv1 \
                                                                             --hidden_size_conv2 $hidden_size_conv2 \
@@ -251,7 +251,7 @@ for seed in "${SEEDS[@]}"; do
                                                                                 --batch_size $batch_size \
                                                                                 --epochs $epochs \
                                                                                 --p_dropout $p_dropout \
-                                                                                --network LSTM \
+                                                                                --network $network \
                                                                                 --input_dim 3 \
                                                                                 --hidden_size_conv1 $hidden_size_conv1 \
                                                                                 --hidden_size_conv2 $hidden_size_conv2 \
