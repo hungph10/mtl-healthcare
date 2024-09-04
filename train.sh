@@ -10,124 +10,126 @@ for seed in "${SEEDS[@]}"; do
                         for network in "${NETWORK[@]}"; do
                             if ["$network" == "LSTM"]
                             then
-                                for hidden_size_lstm1 in "${HIDDEN_SIZE_LSTM1[@]}"
-                                    for hidden_size_lstm2 in "${HIDDEN_SIZE_LSTM2[@]}"
-                                        for task in "${TASKS[@]}"
-                                            do
-                                                if [["$task" == "Classify"] || ["$task" == "Regression"]]
-                                                then
-                                                    EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler" \
-                                                    echo "Running: $EXP_NAME"
-                                                    python train.py \
-                                                        --seed $seed \
-                                                        --task $task\
-                                                        --batch_size $batch_size \
-                                                        --epochs $epochs \
-                                                        --p_dropout $p_dropout \
-                                                        --network LSTM \
-                                                        --input_dim 3 \
-                                                        --hidden_size_lstm1 $hidden_size_lstm1 \
-                                                        --hidden_size_lstm2 $hidden_size_lstm2 \
-                                                        --n_classes 12 \
-                                                        --learning_rate $lr \
-                                                        --lr_scheduler $lr_scheduler \
-                                                        --data_path "$DATA_PATH" \
-                                                        --output_dir "models/$EXP_NAME" \
-                                                        --log_steps 5 \
-                                                        --log_wandb \
-                                                        --project_name "$PROJECT_NAME" \
-                                                        --experiment_name "$EXP_NAME"
-                                                elif ["$task" == "Multitask"]
-                                                then
-                                                    for w_classify in "${W_CLASSIFY[@]}"
-                                                        for w_regression in "${W_REGRESSION[@]}" 
-                                                            do
-                                                                EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify" \
+                                for hidden_size_lstm1 in "${HIDDEN_SIZE_LSTM1[@]}"; do
+                                    for hidden_size_lstm2 in "${HIDDEN_SIZE_LSTM2[@]}"; do
+                                        for task in "${TASKS[@]}"; do
+                                            if [["$task" == "Classify"] || ["$task" == "Regression"]]
+                                            then
+                                                EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler" \
+                                                echo "Running: $EXP_NAME"
+                                                python train.py \
+                                                    --seed $seed \
+                                                    --task $task\
+                                                    --batch_size $batch_size \
+                                                    --epochs $epochs \
+                                                    --p_dropout $p_dropout \
+                                                    --network LSTM \
+                                                    --input_dim 3 \
+                                                    --hidden_size_lstm1 $hidden_size_lstm1 \
+                                                    --hidden_size_lstm2 $hidden_size_lstm2 \
+                                                    --n_classes 12 \
+                                                    --learning_rate $lr \
+                                                    --lr_scheduler $lr_scheduler \
+                                                    --data_path "$DATA_PATH" \
+                                                    --output_dir "models/$EXP_NAME" \
+                                                    --log_steps 5 \
+                                                    --log_wandb \
+                                                    --project_name "$PROJECT_NAME" \
+                                                    --experiment_name "$EXP_NAME"
+                                            elif ["$task" == "Multitask"]
+                                            then
+                                                for w_classify in "${W_CLASSIFY[@]}"; do
+                                                    for w_regression in "${W_REGRESSION[@]}"; do 
+                                                        EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify" \
+                                                        python train.py \
+                                                            --seed $seed \
+                                                            --task $task\
+                                                            --batch_size $batch_size \
+                                                            --epochs $epochs \
+                                                            --p_dropout $p_dropout \
+                                                            --network LSTM \
+                                                            --input_dim 3 \
+                                                            --hidden_size_lstm1 $hidden_size_lstm1 \
+                                                            --hidden_size_lstm2 $hidden_size_lstm2 \
+                                                            --n_classes 12 \
+                                                            --learning_rate $lr \
+                                                            --lr_scheduler $lr_scheduler \
+                                                            --w_regression $w_regression \
+                                                            --w_classify $w_classify \
+                                                            --data_path "$DATA_PATH" \
+                                                            --output_dir "models/$EXP_NAME" \
+                                                            --log_steps 5 \
+                                                            --log_wandb \
+                                                            --project_name "$PROJECT_NAME" \
+                                                            --experiment_name "$EXP_NAME"
+                                                    done
+                                                done
+                                            elif ["$task" == "MultitaskOrthogonal"]
+                                            then
+                                                for w_classify in "${W_CLASSIFY[@]}"; do
+                                                    for w_regression in "${W_REGRESSION[@]}"; do 
+                                                        for w_grad in "${W_GRAD[@]}"; do
+                                                            EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad" \
+                                                            python train.py \
+                                                                --seed $seed \
+                                                                --task $task\
+                                                                --batch_size $batch_size \
+                                                                --epochs $epochs \
+                                                                --p_dropout $p_dropout \
+                                                                --network LSTM \
+                                                                --input_dim 3 \
+                                                                --hidden_size_lstm1 $hidden_size_lstm1 \
+                                                                --hidden_size_lstm2 $hidden_size_lstm2 \
+                                                                --n_classes 12 \
+                                                                --learning_rate $lr \
+                                                                --lr_scheduler $lr_scheduler \
+                                                                --w_regression $w_regression \
+                                                                --w_classify $w_classify \
+                                                                --w_grad $w_grad \
+                                                                --data_path "$DATA_PATH" \
+                                                                --output_dir "models/$EXP_NAME" \
+                                                                --log_steps 5 \
+                                                                --log_wandb \
+                                                                --project_name "$PROJECT_NAME" \
+                                                                --experiment_name "$EXP_NAME"
+                                                        done
+                                                    done
+                                                done
+                                            elif ["$task" == "MultitaskOrthogonalTracenorm"]
+                                            then
+                                                for w_classify in "${W_CLASSIFY[@]}"; do
+                                                    for w_regression in "${W_REGRESSION[@]}"; do 
+                                                        for w_grad in "${W_GRAD[@]}"; do 
+                                                            for w_trace_norm in "${W_TRACENORM[@]}"; do 
                                                                 python train.py \
-                                                                    --seed $seed \
-                                                                    --task $task\
-                                                                    --batch_size $batch_size \
-                                                                    --epochs $epochs \
-                                                                    --p_dropout $p_dropout \
-                                                                    --network LSTM \
-                                                                    --input_dim 3 \
-                                                                    --hidden_size_lstm1 $hidden_size_lstm1 \
-                                                                    --hidden_size_lstm2 $hidden_size_lstm2 \
-                                                                    --n_classes 12 \
-                                                                    --learning_rate $lr \
-                                                                    --lr_scheduler $lr_scheduler \
-                                                                    --w_regression $w_regression \
-                                                                    --w_classify $w_classify \
-                                                                    --data_path "$DATA_PATH" \
-                                                                    --output_dir "models/$EXP_NAME" \
-                                                                    --log_steps 5 \
-                                                                    --log_wandb \
-                                                                    --project_name "$PROJECT_NAME" \
-                                                                    --experiment_name "$EXP_NAME"
+                                                                --seed $seed \
+                                                                --task $task\
+                                                                --batch_size $batch_size \
+                                                                --epochs $epochs \
+                                                                --p_dropout $p_dropout \
+                                                                --network LSTM \
+                                                                --input_dim 3 \
+                                                                --hidden_size_lstm1 $hidden_size_lstm1 \
+                                                                --hidden_size_lstm2 $hidden_size_lstm2 \
+                                                                --n_classes 12 \
+                                                                --learning_rate $lr \
+                                                                --lr_scheduler $lr_scheduler \
+                                                                --w_regression $w_regression \
+                                                                --w_classify $w_classify \
+                                                                --w_grad $w_grad \
+                                                                --w_trace_norm $w_trace_norm \
+                                                                --data_path "$DATA_PATH" \
+                                                                --output_dir "models/$EXP_NAME" \
+                                                                --log_steps 5 \
+                                                                --log_wandb \
+                                                                --project_name "$PROJECT_NAME" \
+                                                                --experiment_name "$EXP_NAME"
                                                             done
-                                                elif ["$task" == "MultitaskOrthogonal"]
-                                                then
-                                                    for w_classify in "${W_CLASSIFY[@]}"
-                                                        for w_regression in "${W_REGRESSION[@]}" 
-                                                            for w_grad in "${W_GRAD[@]}" 
-                                                                do
-                                                                    EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad" \
-                                                                    python train.py \
-                                                                        --seed $seed \
-                                                                        --task $task\
-                                                                        --batch_size $batch_size \
-                                                                        --epochs $epochs \
-                                                                        --p_dropout $p_dropout \
-                                                                        --network LSTM \
-                                                                        --input_dim 3 \
-                                                                        --hidden_size_lstm1 $hidden_size_lstm1 \
-                                                                        --hidden_size_lstm2 $hidden_size_lstm2 \
-                                                                        --n_classes 12 \
-                                                                        --learning_rate $lr \
-                                                                        --lr_scheduler $lr_scheduler \
-                                                                        --w_regression $w_regression \
-                                                                        --w_classify $w_classify \
-                                                                        --w_grad $w_grad \
-                                                                        --data_path "$DATA_PATH" \
-                                                                        --output_dir "models/$EXP_NAME" \
-                                                                        --log_steps 5 \
-                                                                        --log_wandb \
-                                                                        --project_name "$PROJECT_NAME" \
-                                                                        --experiment_name "$EXP_NAME"
-                                                                done
-                                                elif ["$task" == "MultitaskOrthogonalTracenorm"]
-                                                then
-                                                    for w_classify in "${W_CLASSIFY[@]}"
-                                                        for w_regression in "${W_REGRESSION[@]}" 
-                                                            for w_grad in "${W_GRAD[@]}" 
-                                                                for w_trace_norm in "${W_TRACENORM[@]}" 
-                                                                    do
-                                                                        python train.py \
-                                                                        --seed $seed \
-                                                                        --task $task\
-                                                                        --batch_size $batch_size \
-                                                                        --epochs $epochs \
-                                                                        --p_dropout $p_dropout \
-                                                                        --network LSTM \
-                                                                        --input_dim 3 \
-                                                                        --hidden_size_lstm1 $hidden_size_lstm1 \
-                                                                        --hidden_size_lstm2 $hidden_size_lstm2 \
-                                                                        --n_classes 12 \
-                                                                        --learning_rate $lr \
-                                                                        --lr_scheduler $lr_scheduler \
-                                                                        --w_regression $w_regression \
-                                                                        --w_classify $w_classify \
-                                                                        --w_grad $w_grad \
-                                                                        --w_trace_norm $w_trace_norm \
-                                                                        --data_path "$DATA_PATH" \
-                                                                        --output_dir "models/$EXP_NAME" \
-                                                                        --log_steps 5 \
-                                                                        --log_wandb \
-                                                                        --project_name "$PROJECT_NAME" \
-                                                                        --experiment_name "$EXP_NAME"
-                                                                    done
-                                                fi
-                                            done
+                                                        done
+                                                    done
+                                                done
+                                            fi
+                                        done
                             elif ["$network" == "CNN-Attention"]
                             then
                                 for hidden_size_conv1 in "${HIDDEN_SIZE_CONV1[@]}"; do
