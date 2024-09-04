@@ -8,12 +8,12 @@ for seed in "${SEEDS[@]}"; do
                 for lr in "${LEARNING_RATE[@]}"; do
                     for lr_scheduler in "${LR_SCHEDULER[@]}"; do
                         for network in "${NETWORKS[@]}"; do
-                            if ["$network" = "LSTM"]
+                            if [ "$network" = "LSTM" ]
                             then
                                 for hidden_size_lstm1 in "${HIDDEN_SIZE_LSTM1[@]}"; do
                                     for hidden_size_lstm2 in "${HIDDEN_SIZE_LSTM2[@]}"; do
                                         for task in "${TASKS[@]}"; do
-                                            if [["$task" = "Classify"] || ["$task" = "Regression"]]
+                                            if [ "$task" = "Classify" ] || [ "$task" = "Regression" ]
                                             then
                                                 EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-learning_rate_$lr-lr_scheduler_$lr_scheduler" \
                                                 echo "Running: $EXP_NAME"
@@ -36,7 +36,7 @@ for seed in "${SEEDS[@]}"; do
                                                     --log_wandb \
                                                     --project_name "$PROJECT_NAME" \
                                                     --experiment_name "$EXP_NAME"
-                                            elif ["$task" = "Multitask"]
+                                            elif [ "$task" = "Multitask" ]
                                             then
                                                 for w_classify in "${W_CLASSIFY[@]}"; do
                                                     for w_regression in "${W_REGRESSION[@]}"; do 
@@ -64,7 +64,7 @@ for seed in "${SEEDS[@]}"; do
                                                             --experiment_name "$EXP_NAME"
                                                     done
                                                 done
-                                            elif ["$task" = "MultitaskOrthogonal"]
+                                            elif [ "$task" = "MultitaskOrthogonal" ]
                                             then
                                                 for w_classify in "${W_CLASSIFY[@]}"; do
                                                     for w_regression in "${W_REGRESSION[@]}"; do 
@@ -95,7 +95,7 @@ for seed in "${SEEDS[@]}"; do
                                                         done
                                                     done
                                                 done
-                                            elif ["$task" = "MultitaskOrthogonalTracenorm"]
+                                            elif [ "$task" = "MultitaskOrthogonalTracenorm" ]
                                             then
                                                 for w_classify in "${W_CLASSIFY[@]}"; do
                                                     for w_regression in "${W_REGRESSION[@]}"; do 
@@ -132,7 +132,7 @@ for seed in "${SEEDS[@]}"; do
                                         done
                                     done
                                 done
-                            elif ["$network" = "CNN-Attention"]
+                            elif [ "$network" = "CNN-Attention" ]
                             then
                                 for hidden_size_conv1 in "${HIDDEN_SIZE_CONV1[@]}"; do
                                     for hidden_size_conv2 in "${HIDDEN_SIZE_CONV2[@]}"; do
@@ -140,7 +140,7 @@ for seed in "${SEEDS[@]}"; do
                                             for kernel_size in "${KERNEL_SIZE[@]}"; do
                                                 for num_heads in "${NUM_HEADS[@]}"; do
                                                     for task in "${TASKS[@]}"; do
-                                                        if [["$task" = "Classify"] || ["$task" = "Regression"]]
+                                                        if [ "$task" = "Classify" ] || [ "$task" = "Regression" ]
                                                         then
                                                             EXP_NAME="$network-seed_$seed-task_$task-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-learning_rate_$lr-lr_scheduler_$lr_scheduler" \
                                                             echo "Running: $EXP_NAME"
@@ -166,7 +166,7 @@ for seed in "${SEEDS[@]}"; do
                                                                 --log_wandb \
                                                                 --project_name "$PROJECT_NAME" \
                                                                 --experiment_name "$EXP_NAME"
-                                                        elif ["$task" = "Multitask"]
+                                                        elif [ "$task" = "Multitask" ]
                                                         then
                                                             for w_classify in "${W_CLASSIFY[@]}"; do
                                                                 for w_regression in "${W_REGRESSION[@]}"; do 
@@ -198,7 +198,7 @@ for seed in "${SEEDS[@]}"; do
                                                                         --experiment_name "$EXP_NAME"
                                                                 done
                                                             done
-                                                        elif ["$task" = "MultitaskOrthogonal"]
+                                                        elif [ "$task" = "MultitaskOrthogonal" ]
                                                         then
                                                             for w_classify in "${W_CLASSIFY[@]}"; do
                                                                 for w_regression in "${W_REGRESSION[@]}"; do 
@@ -233,7 +233,7 @@ for seed in "${SEEDS[@]}"; do
                                                                     done
                                                                 done
                                                             done
-                                                        elif ["$task" = "MultitaskOrthogonalTracenorm"]
+                                                        elif [ "$task" = "MultitaskOrthogonalTracenorm" ]
                                                         then
                                                             for w_classify in "${W_CLASSIFY[@]}"; do
                                                                 for w_regression in "${W_REGRESSION[@]}"; do 
