@@ -130,6 +130,8 @@ for seed in "${SEEDS[@]}"; do
                                                 done
                                             fi
                                         done
+                                    done
+                                done
                             elif ["$network" == "CNN-Attention"]
                             then
                                 for hidden_size_conv1 in "${HIDDEN_SIZE_CONV1[@]}"; do
