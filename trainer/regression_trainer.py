@@ -116,7 +116,7 @@ class RegressionTrainer(BaseTrainer):
 
             
             # Save best checkpoint regression
-            if test_log["Test MAE"] < min_mae:
+            if test_log["Test MAE"] <= min_mae:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test MAE",

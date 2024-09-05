@@ -151,7 +151,7 @@ class MultitaskTrainer(BaseTrainer):
                 wandb.log(test_log)
 
             # Save best checkpoint classify
-            if test_log["Test F1"] > max_f1:
+            if test_log["Test F1"] >= max_f1:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test F1",
@@ -167,7 +167,7 @@ class MultitaskTrainer(BaseTrainer):
                 self.save_checkpoint(checkpoint_path=best_cls_checkpoint_path)
                 
             # Save best checkpoint regression
-            if test_log["Test MAE"] < min_mae:
+            if test_log["Test MAE"] <= min_mae:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test MAE",
@@ -183,7 +183,14 @@ class MultitaskTrainer(BaseTrainer):
                 self.save_checkpoint(checkpoint_path=best_reg_checkpoint_path)
                 
             # Save best multitask checkpoint 
-            if test_log["Test Loss"] > min_loss:
+            if test_log["Test Loss"] <= min_loss:
+                patient = 0
+                # Update record multitask loss
+                min_loss = test_log["Test Loss"]
+                best_multitask_log = test_log
+                
+                self.save_checkpoint(checkpoint_path=best_mtt_checkpoint_path)
+            else:
                 patient += 1
                 log_message = self.get_log_message(
                     epoch=epoch,
@@ -194,13 +201,6 @@ class MultitaskTrainer(BaseTrainer):
                 )
                 if log_message:
                     tqdm.write(log_message, end="\n\n")
-            else:
-                patient = 0
-                # Update record multitask loss
-                min_loss = test_log["Test Loss"]
-                best_multitask_log = test_log
-                
-                self.save_checkpoint(checkpoint_path=best_mtt_checkpoint_path)
         #     if patient > 100:
         #         print(f"Early stopping at epoch {epoch + 1}!")
         #         break

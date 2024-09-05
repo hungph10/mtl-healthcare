@@ -16,7 +16,7 @@ for seed in "${SEEDS[@]}"; do
                                             if [ "$task" = "Classify" ] || [ "$task" = "Regression" ]
                                             then
                                                 short_name_task=$task
-                                                EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler" 
+                                                EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler" 
                                                 echo "Running: $EXP_NAME"
                                                 python train.py \
                                                     --seed $seed \
@@ -42,7 +42,7 @@ for seed in "${SEEDS[@]}"; do
                                                 short_name_task="MTT"
                                                 for w_classify in "${W_CLASSIFY[@]}"; do
                                                     for w_regression in "${W_REGRESSION[@]}"; do 
-                                                        EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify" 
+                                                        EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify" 
                                                         echo "Running: $EXP_NAME"
                                                         python train.py \
                                                             --seed $seed \
@@ -73,7 +73,7 @@ for seed in "${SEEDS[@]}"; do
                                                 for w_classify in "${W_CLASSIFY[@]}"; do
                                                     for w_regression in "${W_REGRESSION[@]}"; do 
                                                         for w_grad in "${W_GRAD[@]}"; do
-                                                            EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad" 
+                                                            EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad" 
                                                             echo "Running: $EXP_NAME"
                                                             python train.py \
                                                                 --seed $seed \
@@ -107,7 +107,7 @@ for seed in "${SEEDS[@]}"; do
                                                     for w_regression in "${W_REGRESSION[@]}"; do 
                                                         for w_grad in "${W_GRAD[@]}"; do 
                                                             for w_trace_norm in "${W_TRACENORM[@]}"; do
-                                                                EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad-w_trace_norm_$w_trace_norm" 
+                                                                EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_lstm1_$hidden_size_lstm1-hidden_size_lstm2_$hidden_size_lstm2-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad-w_trace_norm_$w_trace_norm" 
                                                                 echo "Running $EXP_NAME"
                                                                 python train.py \
                                                                 --seed $seed \
@@ -151,7 +151,7 @@ for seed in "${SEEDS[@]}"; do
                                                         if [ "$task" = "Classify" ] || [ "$task" = "Regression" ]
                                                         then
                                                             short_name_task=$task
-                                                            EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler" 
+                                                            EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler" 
                                                             echo "Running: $EXP_NAME"
                                                             python train.py \
                                                                 --seed $seed \
@@ -180,7 +180,7 @@ for seed in "${SEEDS[@]}"; do
                                                             short_name_task="MTT"
                                                             for w_classify in "${W_CLASSIFY[@]}"; do
                                                                 for w_regression in "${W_REGRESSION[@]}"; do 
-                                                                    EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify" 
+                                                                    EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify" 
                                                                     echo "Running: $EXP_NAME"
                                                                     python train.py \
                                                                         --seed $seed \
@@ -214,7 +214,7 @@ for seed in "${SEEDS[@]}"; do
                                                             for w_classify in "${W_CLASSIFY[@]}"; do
                                                                 for w_regression in "${W_REGRESSION[@]}"; do 
                                                                     for w_grad in "${W_GRAD[@]}"; do 
-                                                                        EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad" 
+                                                                        EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad" 
                                                                         echo "Running: $EXP_NAME"
                                                                         python train.py \
                                                                             --seed $seed \
@@ -251,7 +251,7 @@ for seed in "${SEEDS[@]}"; do
                                                                 for w_regression in "${W_REGRESSION[@]}"; do 
                                                                     for w_grad in "${W_GRAD[@]}"; do 
                                                                         for w_trace_norm in "${W_TRACENORM[@]}"; do 
-                                                                            EXP_NAME="task_$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad-w_trace_norm_$w_trace_norm" 
+                                                                            EXP_NAME="$short_name_task-$network-seed_$seed-batch_size_$batch_size-epochs_$epochs-p_dropout_$p_dropout-hidden_size_conv1_$hidden_size_conv1-hidden_size_conv2_$hidden_size_conv2-hidden_size_conv3_$hidden_size_conv3-kernel_size_$kernel_size-num_heads_$num_heads-lr_$lr-lr_scheduler_$lr_scheduler-w_regression_$w_regression-w_classify_$w_classify-w_grad_$w_grad-w_trace_norm_$w_trace_norm" 
                                                                             echo "Running: $EXP_NAME"
                                                                             python train.py \
                                                                                 --seed $seed \
