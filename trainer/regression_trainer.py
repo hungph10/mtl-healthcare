@@ -80,6 +80,7 @@ class RegressionTrainer(BaseTrainer):
             self.output_dir,
             "best_reg.pth"
         )
+        self.save_checkpoint(checkpoint_path=best_reg_checkpoint_path)
         
         # Training
         self.model.to(device)
@@ -116,7 +117,7 @@ class RegressionTrainer(BaseTrainer):
 
             
             # Save best checkpoint regression
-            if test_log["Test MAE"] <= min_mae:
+            if test_log["Test MAE"] < min_mae:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test MAE",

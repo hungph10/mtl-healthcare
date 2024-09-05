@@ -105,14 +105,20 @@ class MultitaskTrainer(BaseTrainer):
             self.output_dir,
             "best_cls.pth"
         )
+        self.save_checkpoint(checkpoint_path=best_cls_checkpoint_path)
+
         best_reg_checkpoint_path = os.path.join(
             self.output_dir,
             "best_reg.pth"
         )
+        self.save_checkpoint(checkpoint_path=best_reg_checkpoint_path)
+
         best_mtt_checkpoint_path = os.path.join(
             self.output_dir,
             "best_multitask.pth"
         )
+        self.save_checkpoint(checkpoint_path=best_mtt_checkpoint_path)
+
         
         # Training
         self.model.to(device)
@@ -151,7 +157,7 @@ class MultitaskTrainer(BaseTrainer):
                 wandb.log(test_log)
 
             # Save best checkpoint classify
-            if test_log["Test F1"] >= max_f1:
+            if test_log["Test F1"] > max_f1:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test F1",
@@ -167,7 +173,7 @@ class MultitaskTrainer(BaseTrainer):
                 self.save_checkpoint(checkpoint_path=best_cls_checkpoint_path)
                 
             # Save best checkpoint regression
-            if test_log["Test MAE"] <= min_mae:
+            if test_log["Test MAE"] < min_mae:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test MAE",
@@ -183,7 +189,7 @@ class MultitaskTrainer(BaseTrainer):
                 self.save_checkpoint(checkpoint_path=best_reg_checkpoint_path)
                 
             # Save best multitask checkpoint 
-            if test_log["Test Loss"] <= min_loss:
+            if test_log["Test Loss"] < min_loss:
                 patient = 0
                 # Update record multitask loss
                 min_loss = test_log["Test Loss"]

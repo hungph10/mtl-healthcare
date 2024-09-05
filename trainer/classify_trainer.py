@@ -79,7 +79,7 @@ class ClassifyTrainer(BaseTrainer):
             self.output_dir,
             "best_cls.pth"
         )
-
+        self.save_checkpoint(checkpoint_path=best_cls_checkpoint_path)
 
         
         # Training
@@ -116,7 +116,7 @@ class ClassifyTrainer(BaseTrainer):
                 wandb.log(test_log)
 
             # Save best checkpoint classify
-            if test_log["Test F1"] >= max_f1:
+            if test_log["Test F1"] > max_f1:
                 log_message = self.get_log_message(
                     epoch=epoch,
                     metric="Test F1",
