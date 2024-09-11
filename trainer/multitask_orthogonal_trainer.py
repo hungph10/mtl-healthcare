@@ -109,7 +109,9 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
                         (torch.mul(grad_cls, grad_reg) - torch.ones_like(grad_reg).to(device)), 2
                     )
             loss = self.w_reg * reg_loss + self.w_cls * cls_loss + self.w_grad * grad_loss
-
+            print(f"""\
+Loss reg: {self.w_reg * reg_loss} - Loss cls: {self.w_cls * cls_loss} - Loss grad: {self.w_grad * grad_loss} - Agg loss: {loss}\
+""")
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
