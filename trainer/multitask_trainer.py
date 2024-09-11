@@ -329,9 +329,7 @@ class MultitaskTrainer(BaseTrainer):
             cls_loss = cls_loss_fn(cls_output, y_cls)
             
             loss = self.w_reg * reg_loss + self.w_cls * cls_loss
-            print(f"""\
-Loss reg: {self.w_reg * reg_loss} - Loss cls: {self.w_cls * cls_loss} - Agg loss: {loss}\
-""")
+
 
             optimizer.zero_grad()
             loss.backward()
