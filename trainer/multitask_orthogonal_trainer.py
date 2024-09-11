@@ -92,13 +92,13 @@ class MultitaskOrthogonalTrainer(MultitaskTrainer):
                 outputs=reg_loss,
                 inputs=model.share_parameters(),
                 retain_graph=True,
-                allow_unused=True
+                allow_unused=False
             )
             grads_cls = torch.autograd.grad(
                 outputs=cls_loss,
                 inputs=model.share_parameters(),
                 retain_graph=True,
-                allow_unused=True
+                allow_unused=False
             )
             grad_loss = 0
             for i in range(len(grads_reg)):
